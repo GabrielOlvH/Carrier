@@ -4,13 +4,14 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "MixinChestBlock",
-    "MixinPlayerEntity"
+    "MixinPlayerEntity",
+    "MixinPlayerManager"
   ],
   "client": [
     "MixinGameRenderer",
+    "MixinPlayerInventory",
     "MixinPlayerModel",
-    "MixinPlayerRenderer",
-    "MixinPlayerInventory"
+    "MixinPlayerRenderer"
   ],
   "injectors": {
     "defaultRequire": 1

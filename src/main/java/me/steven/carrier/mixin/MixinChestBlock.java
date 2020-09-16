@@ -36,15 +36,17 @@ public class MixinChestBlock implements Carriable {
 
     @Override
     public @NotNull ActionResult tryPickup(@NotNull Holder holder, @NotNull World world, @NotNull BlockPos pos) {
-        if (world.isClient) return ActionResult.SUCCESS;
         ChestBlock chestBlock = (ChestBlock) (Object) this;
         BlockState blockState = world.getBlockState(pos);
-        Inventory inv = ChestBlock.getInventory(chestBlock, blockState, world, pos, true);
-        if (inv == null) return ActionResult.PASS;
-        Holding holding = new Holding(new Identifier(Carrier.MOD_ID, "chest"), Utils.inventoryToTag(inv, new CompoundTag()));
-        holder.setHolding(holding);
-        inv.clear();
-        world.setBlockState(pos, Blocks.AIR.getDefaultState());
+        if (!world.isClient) {
+            Inventory inv = ChestBlock.getInventory(chestBlock, blockState, world, pos, true);
+            if (inv == null) return ActionResult.PASS;
+            Holding holding = new Holding(new Identifier(Carrier.MOD_ID, "chest"), Utils.inventoryToTag(inv, new CompoundTag()));
+            holder.setHolding(holding);
+            sync(holder);
+            inv.clear();
+            world.setBlockState(pos, Blocks.AIR.getDefaultState());
+        }
         return ActionResult.SUCCESS;
     }
 
@@ -56,14 +58,17 @@ public class MixinChestBlock implements Carriable {
         Inventories.fromTag(holding.getTag(), invList);
         PlayerEntity player = (PlayerEntity) holder;
         BlockPos pos = ctx.getBlockPos();
-        world.setBlockState(pos, Blocks.CHEST.getDefaultState().with(FACING, player.getHorizontalFacing().getOpposite()));
+        if (!world.isClient) {
+            world.setBlockState(pos, Blocks.CHEST.getDefaultState().with(FACING, player.getHorizontalFacing().getOpposite()));
 
-        Inventory inv = ChestBlock.getInventory((ChestBlock)(Object)this, world.getBlockState(pos), world, pos, false);
-        if (inv == null) return ActionResult.PASS;
-        for (int i = 0; i < invList.size(); i++) {
-            inv.setStack(i, invList.get(i));
+            Inventory inv = ChestBlock.getInventory((ChestBlock) (Object) this, world.getBlockState(pos), world, pos, false);
+            if (inv == null) return ActionResult.PASS;
+            for (int i = 0; i < invList.size(); i++) {
+                inv.setStack(i, invList.get(i));
+            }
+            holder.setHolding(null);
+            sync(holder);
         }
-        holder.setHolding(null);
         return ActionResult.SUCCESS;
     }
 
