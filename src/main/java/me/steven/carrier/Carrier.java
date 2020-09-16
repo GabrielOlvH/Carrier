@@ -29,7 +29,8 @@ public class Carrier implements ModInitializer {
                 if (holding == null) return ActionResult.PASS;
                 Carriable carriable = CarriableRegistry.INSTANCE.get(holding.getType());
                 if (carriable != null) {
-                    carriable.tryPlace(holder, world, new CarriablePlacementContext(holder, carriable, pos.offset(hitResult.getSide()), hitResult.getSide()));
+                    ActionResult actionResult = carriable.tryPlace(holder, world, new CarriablePlacementContext(holder, carriable, pos.offset(hitResult.getSide()), hitResult.getSide()));
+                    if (actionResult.isAccepted()) return actionResult;
                 }
             }
             return ActionResult.PASS;
