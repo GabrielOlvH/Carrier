@@ -7,10 +7,29 @@ import me.steven.carrier.api.Holding;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
 import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.entity.PigEntityRenderer;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.passive.PigEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Identifier;
 
 public class CarrierClient implements ClientModInitializer {
+
+    private static PigEntity DUMMY_PIG;
+    private static PigEntityRenderer PIG_RENDERER;
+
+    public static PigEntity getDummyPig() {
+        if (DUMMY_PIG == null)
+            DUMMY_PIG = new PigEntity(EntityType.PIG, MinecraftClient.getInstance().world);
+        return DUMMY_PIG;
+    }
+
+    public static PigEntityRenderer getPigRenderer() {
+        if (PIG_RENDERER == null)
+            PIG_RENDERER = new PigEntityRenderer(MinecraftClient.getInstance().getEntityRenderDispatcher());
+        return PIG_RENDERER;
+    }
+
     @Override
     public void onInitializeClient() {
         ClientSidePacketRegistry.INSTANCE.register(Carrier.SYNC_CARRYING_PACKET, (ctx, buf) -> {

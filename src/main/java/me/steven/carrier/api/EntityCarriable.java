@@ -1,12 +1,17 @@
 package me.steven.carrier.api;
 
 import me.steven.carrier.Carrier;
+import me.steven.carrier.CarrierClient;
 import me.steven.carrier.mixin.AccessorEntity;
+import net.minecraft.block.BlockState;
+import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
@@ -62,6 +67,12 @@ public class EntityCarriable implements Carriable {
 
     @Override
     public void render(@NotNull Holder holder, @NotNull MatrixStack matrices, @NotNull VertexConsumerProvider vcp, float tickDelta, int light) {
-
+        PlayerEntity player = (PlayerEntity) holder;
+        matrices.push();
+        matrices.scale(0.6f, 0.6f, 0.6f);
+        matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-player.bodyYaw +90));
+        matrices.translate(-0.6, 0.8, -0.2);
+        CarrierClient.getPigRenderer().render(CarrierClient.getDummyPig(), 0, tickDelta, matrices, vcp, light);
+        matrices.pop();
     }
 }
