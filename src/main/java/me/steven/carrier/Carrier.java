@@ -22,6 +22,6 @@ public class Carrier implements ModInitializer {
     @Override
     public void onInitialize() {
         UseBlockCallback.EVENT.register(new HolderInteractCallback());
-        CarriableRegistry.INSTANCE.register(new Identifier("carrier:chest"), (Carriable) Blocks.CHEST);
+        CarriableRegistry.INSTANCE.register(new Identifier("carrier", "chest"), (Carriable) Blocks.CHEST);
     }
 }

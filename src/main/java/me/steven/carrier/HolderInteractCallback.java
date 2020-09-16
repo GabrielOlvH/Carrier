@@ -20,7 +20,7 @@ public class HolderInteractCallback implements UseBlockCallback {
             Holding holding = holder.getHolding();
             if (holding == null && player.isSneaking() && block instanceof Carriable) {
                 Carriable carriable = (Carriable) block;
-                ActionResult actionResult = carriable.tryPickup(holder, world, pos);
+                ActionResult actionResult = carriable.tryPickup(holder, world, pos, null);
                 if (actionResult.isAccepted()) return actionResult;
             }
             if (holding == null) return ActionResult.PASS;
