@@ -9,8 +9,11 @@ import me.steven.carrier.api.Holding;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ChestBlock;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventories;
 import net.minecraft.inventory.Inventory;
@@ -28,6 +31,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 @Mixin(ChestBlock.class)
 public class MixinChestBlock implements Carriable {
+
     @Shadow @Final public static DirectionProperty FACING;
 
     @Override
@@ -45,7 +49,7 @@ public class MixinChestBlock implements Carriable {
     }
 
     @Override
-    public ActionResult tryPlace(@NotNull Holder holder, @NotNull World world, @NotNull CarriablePlacementContext ctx) {
+    public @NotNull ActionResult tryPlace(@NotNull Holder holder, @NotNull World world, @NotNull CarriablePlacementContext ctx) {
         Holding holding = holder.getHolding();
         if (holding == null) return ActionResult.PASS;
         DefaultedList<ItemStack> invList = DefaultedList.ofSize(27, ItemStack.EMPTY);
@@ -55,6 +59,7 @@ public class MixinChestBlock implements Carriable {
         world.setBlockState(pos, Blocks.CHEST.getDefaultState().with(FACING, player.getHorizontalFacing().getOpposite()));
 
         Inventory inv = ChestBlock.getInventory((ChestBlock)(Object)this, world.getBlockState(pos), world, pos, false);
+        if (inv == null) return ActionResult.PASS;
         for (int i = 0; i < invList.size(); i++) {
             inv.setStack(i, invList.get(i));
         }
@@ -63,7 +68,16 @@ public class MixinChestBlock implements Carriable {
     }
 
     @Override
-    public void render(@NotNull Holder holder, @NotNull MatrixStack matrices, @NotNull VertexConsumerProvider vcp) {
-
+    public void render(@NotNull Holder holder, @NotNull MatrixStack matrices, @NotNull VertexConsumerProvider vcp, float tickDelta, int light) {
+        if (holder instanceof PlayerEntity) {
+            BlockState blockState = Blocks.CHEST.getDefaultState();
+            PlayerEntity player = (PlayerEntity) holder;
+            matrices.push();
+            matrices.scale(0.6f, 0.6f, 0.6f);
+            matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-player.bodyYaw));
+            matrices.translate(-0.5, 0.8, 0.2);
+            MinecraftClient.getInstance().getBlockRenderManager().renderBlockAsEntity(blockState, matrices, vcp, light, OverlayTexture.DEFAULT_UV);
+            matrices.pop();
+        }
     }
 }

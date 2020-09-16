@@ -7,6 +7,9 @@
     "MixinPlayerEntity"
   ],
   "client": [
+    "MixinPlayerRenderer",
+    "MixinPlayerModel",
+    "MixinGameRenderer"
   ],
   "injectors": {
     "defaultRequire": 1
