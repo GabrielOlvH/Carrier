@@ -3,6 +3,8 @@
   "package": "me.steven.carrier.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
+    "MixinChestBlock",
+    "MixinPlayerEntity"
   ],
   "client": [
   ],

@@ -18,10 +18,7 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-      {
-        "adapter": "kotlin",
-        "value": "me.steven.carrier.Carrier"
-      }
+        "me.steven.carrier.Carrier"
     ]
   },
   "mixins": [
@@ -30,7 +27,6 @@
   "depends": {
     "fabricloader": ">=0.8.7",
     "fabric": "*",
-    "fabric-language-kotlin": "*",
     "minecraft": "1.16.x"
   },
   "suggests": {
