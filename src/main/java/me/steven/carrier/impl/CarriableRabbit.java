@@ -44,6 +44,7 @@ public class CarriableRabbit extends EntityCarriable<RabbitEntity> {
     @Override
     public void render(@NotNull Holder holder, @NotNull MatrixStack matrices, @NotNull VertexConsumerProvider vcp, float tickDelta, int light) {
         PlayerEntity player = (PlayerEntity) holder;
+        updateEntity(holder.getHolding());
         matrices.push();
         //matrices.scale(0.9f, 0.9f, 0.9f);
         matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-player.bodyYaw + 90));

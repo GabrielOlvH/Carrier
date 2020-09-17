@@ -14,6 +14,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.ActionResult;
@@ -72,5 +73,21 @@ public abstract class EntityCarriable<T extends Entity> implements Carriable {
         Carriable carriable = CarriableRegistry.INSTANCE.get(holding.getType());
         carriable.sync(holder);
         return ActionResult.SUCCESS;
+    }
+
+    protected void updateEntity(Holding holding) {
+        if (!holding.getTag().getUuid("UUID").equals(getEntity().getUuid())) {
+            getEntity().fromTag(holding.getTag());
+        }
+        if (getEntity() instanceof LivingEntity) {
+            LivingEntity entity = (LivingEntity) getEntity();
+            entity.bodyYaw = 0;
+            entity.prevBodyYaw =0;
+        }
+        getEntity().yaw = 0;
+        getEntity().prevYaw = 0;
+        getEntity().pitch = 0;
+        getEntity().prevPitch = 0;
+        getEntity().setHeadYaw(0);
     }
 }

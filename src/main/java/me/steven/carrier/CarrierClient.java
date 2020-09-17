@@ -33,18 +33,6 @@ public class CarrierClient implements ClientModInitializer {
                 Holder holder = (Holder) MinecraftClient.getInstance().player;
                 if (holder != null) {
                     holder.setHolding(finalHolding);
-                    if (finalHolding != null) {
-                        Carriable carriable = CarriableRegistry.INSTANCE.get(finalHolding.getType());
-                        if (carriable instanceof EntityCarriable) {
-                            EntityCarriable<?> entityCarriable = (EntityCarriable<?>) carriable;
-                            entityCarriable.getEntity().fromTag(finalHolding.getTag());
-                            entityCarriable.getEntity().yaw = 0;
-                            entityCarriable.getEntity().prevYaw = 0;
-                            entityCarriable.getEntity().pitch = 0;
-                            entityCarriable.getEntity().prevPitch = 0;
-                            entityCarriable.getEntity().setHeadYaw(0);
-                        }
-                    }
                 }
             });
         });
