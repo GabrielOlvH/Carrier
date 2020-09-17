@@ -3,6 +3,7 @@ package me.steven.carrier;
 import me.steven.carrier.api.*;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.minecraft.block.Block;
 import net.minecraft.block.Blocks;
@@ -21,6 +22,7 @@ public class Carrier implements ModInitializer {
 
     @Override
     public void onInitialize() {
+        ServerTickEvents.END_WORLD_TICK.register(new ServerWorldTickCallback());
         UseBlockCallback.EVENT.register(new HolderInteractCallback());
         CarriableRegistry.INSTANCE.register(new Identifier("carrier", "chest"), (Carriable) Blocks.CHEST);
     }
