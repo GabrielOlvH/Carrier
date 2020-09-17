@@ -3,6 +3,8 @@ package me.steven.carrier.api;
 import me.steven.carrier.Carrier;
 import me.steven.carrier.CarrierClient;
 import me.steven.carrier.mixin.AccessorEntity;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
@@ -35,8 +37,10 @@ public abstract class EntityCarriable<T extends Entity> implements Carriable {
         return type;
     }
 
+    @Environment(EnvType.CLIENT)
     public abstract T getEntity();
 
+    @Environment(EnvType.CLIENT)
     public abstract EntityRenderer<T> getEntityRenderer();
 
     @Override
