@@ -7,6 +7,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.Entity;
@@ -20,12 +21,12 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class EntityCarriable implements Carriable {
+public abstract class EntityCarriable<T extends Entity> implements Carriable {
 
     private final Identifier type;
-    private final EntityType<?> entityType;
+    private final EntityType<T> entityType;
 
-    public EntityCarriable(Identifier type, EntityType<?> entityType) {
+    public EntityCarriable(Identifier type, EntityType<T> entityType) {
         this.type = type;
         this.entityType = entityType;
     }
@@ -33,6 +34,10 @@ public class EntityCarriable implements Carriable {
     public Identifier getType() {
         return type;
     }
+
+    public abstract T getEntity();
+
+    public abstract EntityRenderer<T> getEntityRenderer();
 
     @Override
     public @NotNull ActionResult tryPickup(@NotNull Holder holder, @NotNull World world, @NotNull BlockPos blockPos, @Nullable Entity entity) {
@@ -70,9 +75,9 @@ public class EntityCarriable implements Carriable {
         PlayerEntity player = (PlayerEntity) holder;
         matrices.push();
         matrices.scale(0.6f, 0.6f, 0.6f);
-        matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-player.bodyYaw +90));
-        matrices.translate(-0.6, 0.8, -0.2);
-        CarrierClient.getPigRenderer().render(CarrierClient.getDummyPig(), 0, tickDelta, matrices, vcp, light);
+        matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-player.bodyYaw + 90));
+        matrices.translate(-0.6, 0.8, -0.1);
+        getEntityRenderer().render(getEntity(), 0, tickDelta, matrices, vcp, light);
         matrices.pop();
     }
 }
