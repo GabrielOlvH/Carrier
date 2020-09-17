@@ -69,15 +69,4 @@ public abstract class EntityCarriable<T extends Entity> implements Carriable {
         carriable.sync(holder);
         return ActionResult.SUCCESS;
     }
-
-    @Override
-    public void render(@NotNull Holder holder, @NotNull MatrixStack matrices, @NotNull VertexConsumerProvider vcp, float tickDelta, int light) {
-        PlayerEntity player = (PlayerEntity) holder;
-        matrices.push();
-        matrices.scale(0.6f, 0.6f, 0.6f);
-        matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-player.bodyYaw + 90));
-        matrices.translate(-0.6, 0.8, -0.1);
-        getEntityRenderer().render(getEntity(), 0, tickDelta, matrices, vcp, light);
-        matrices.pop();
-    }
 }

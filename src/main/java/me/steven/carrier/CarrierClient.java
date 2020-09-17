@@ -1,14 +1,12 @@
 package me.steven.carrier;
 
-import me.steven.carrier.api.Carriable;
-import me.steven.carrier.api.CarriableRegistry;
-import me.steven.carrier.api.Holder;
-import me.steven.carrier.api.Holding;
+import me.steven.carrier.api.*;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.entity.PigEntityRenderer;
 import net.minecraft.entity.EntityType;
+import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.passive.PigEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Identifier;
@@ -33,8 +31,21 @@ public class CarrierClient implements ClientModInitializer {
             Holding finalHolding = holding;
             ctx.getTaskQueue().execute(() -> {
                 Holder holder = (Holder) MinecraftClient.getInstance().player;
-                if (holder != null)
+                if (holder != null) {
                     holder.setHolding(finalHolding);
+                    if (finalHolding != null) {
+                        Carriable carriable = CarriableRegistry.INSTANCE.get(finalHolding.getType());
+                        if (carriable instanceof EntityCarriable) {
+                            EntityCarriable<?> entityCarriable = (EntityCarriable<?>) carriable;
+                            entityCarriable.getEntity().fromTag(finalHolding.getTag());
+                            entityCarriable.getEntity().yaw = 0;
+                            entityCarriable.getEntity().prevYaw = 0;
+                            entityCarriable.getEntity().pitch = 0;
+                            entityCarriable.getEntity().prevPitch = 0;
+                            entityCarriable.getEntity().setHeadYaw(0);
+                        }
+                    }
+                }
             });
         });
     }
