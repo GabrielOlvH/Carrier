@@ -14,7 +14,8 @@
     "MixinGameRenderer",
     "MixinPlayerInventory",
     "MixinPlayerModel",
-    "MixinPlayerRenderer"
+    "MixinPlayerRenderer",
+    "AccessorBlockEntity"
   ],
   "injectors": {
     "defaultRequire": 1

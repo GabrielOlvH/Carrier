@@ -15,6 +15,8 @@ import net.minecraft.block.entity.MobSpawnerBlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
+import net.minecraft.client.render.block.entity.MobSpawnerBlockEntityRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.Entity;
@@ -27,6 +29,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.Lazy;
 import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -38,6 +41,9 @@ import org.spongepowered.asm.mixin.Shadow;
 
 @Mixin(SpawnerBlock.class)
 public class MixinSpawnerBlock implements Carriable {
+
+    private static final Lazy<MobSpawnerBlockEntity> dummySpawner = new Lazy<>(MobSpawnerBlockEntity::new);
+    private static final Lazy<MobSpawnerBlockEntityRenderer> dummyRenderer = new Lazy<>(() -> new MobSpawnerBlockEntityRenderer(BlockEntityRenderDispatcher.INSTANCE));
 
     @Override
     public @NotNull ActionResult tryPickup(@NotNull Holder holder, @NotNull World world, @NotNull BlockPos pos, @Nullable Entity entity) {
@@ -71,13 +77,18 @@ public class MixinSpawnerBlock implements Carriable {
     @Override
     public void render(@NotNull Holder holder, @NotNull MatrixStack matrices, @NotNull VertexConsumerProvider vcp, float tickDelta, int light) {
         if (holder instanceof PlayerEntity) {
+            MobSpawnerBlockEntity dummySpawner = MixinSpawnerBlock.dummySpawner.get();
+            dummySpawner.getLogic().fromTag(holder.getHolding().getTag());
             BlockState blockState = Blocks.SPAWNER.getDefaultState();
             PlayerEntity player = (PlayerEntity) holder;
+            ((AccessorBlockEntity) dummySpawner).setWorld(player.world);
             matrices.push();
             matrices.scale(0.6f, 0.6f, 0.6f);
             matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-player.bodyYaw));
             matrices.translate(-0.5, 0.8, 0.2);
             MinecraftClient.getInstance().getBlockRenderManager().renderBlockAsEntity(blockState, matrices, vcp, light, OverlayTexture.DEFAULT_UV);
+            if (MinecraftClient.isFancyGraphicsOrBetter())
+                dummyRenderer.get().render(dummySpawner, tickDelta, matrices, vcp, light, OverlayTexture.DEFAULT_UV);
             matrices.pop();
         }
     }
