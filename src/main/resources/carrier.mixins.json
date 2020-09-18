@@ -3,19 +3,21 @@
   "package": "me.steven.carrier.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
+    "AccessorBarrelBlockEntity",
     "AccessorEntity",
     "MixinAnimalEntity",
+    "MixinBarrelBlock",
     "MixinChestBlock",
     "MixinPlayerEntity",
     "MixinPlayerManager",
     "MixinSpawnerBlock"
   ],
   "client": [
+    "AccessorBlockEntity",
     "MixinGameRenderer",
     "MixinPlayerInventory",
     "MixinPlayerModel",
-    "MixinPlayerRenderer",
-    "AccessorBlockEntity"
+    "MixinPlayerRenderer"
   ],
   "injectors": {
     "defaultRequire": 1
