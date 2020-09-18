@@ -9,6 +9,8 @@ import me.steven.carrier.api.Holding;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ChestBlock;
+import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.block.entity.ChestBlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumerProvider;
@@ -39,14 +41,13 @@ public class MixinChestBlock implements Carriable {
     @Override
     public @NotNull ActionResult tryPickup(@NotNull Holder holder, @NotNull World world, @NotNull BlockPos pos, @Nullable Entity entity) {
         if (world.isClient) return ActionResult.PASS;
-        ChestBlock chestBlock = (ChestBlock) (Object) this;
-        BlockState blockState = world.getBlockState(pos);
-        Inventory inv = ChestBlock.getInventory(chestBlock, blockState, world, pos, true);
-        if (inv == null) return ActionResult.PASS;
-        Holding holding = new Holding(new Identifier(Carrier.MOD_ID, "chest"), Utils.inventoryToTag(inv, new CompoundTag()));
+        BlockEntity blockEntity = world.getBlockEntity(pos);
+        if (!(blockEntity instanceof ChestBlockEntity)) return ActionResult.PASS;
+        AccessorChestBlockEntity chest = (AccessorChestBlockEntity) blockEntity;
+        Holding holding = new Holding(new Identifier(Carrier.MOD_ID, "chest"), Inventories.toTag(new CompoundTag(), chest.getInventory()));
         holder.setHolding(holding);
         sync(holder);
-        inv.clear();
+        chest.getInventory().clear();
         world.setBlockState(pos, Blocks.AIR.getDefaultState());
         return ActionResult.SUCCESS;
     }
@@ -56,16 +57,13 @@ public class MixinChestBlock implements Carriable {
         if (world.isClient) return ActionResult.PASS;
         Holding holding = holder.getHolding();
         if (holding == null) return ActionResult.PASS;
-        DefaultedList<ItemStack> invList = DefaultedList.ofSize(27, ItemStack.EMPTY);
-        Inventories.fromTag(holding.getTag(), invList);
         PlayerEntity player = (PlayerEntity) holder;
         BlockPos pos = ctx.getBlockPos();
         world.setBlockState(pos, Blocks.CHEST.getDefaultState().with(FACING, player.getHorizontalFacing().getOpposite()));
-        Inventory inv = ChestBlock.getInventory((ChestBlock) (Object) this, world.getBlockState(pos), world, pos, false);
-        if (inv == null) return ActionResult.PASS;
-        for (int i = 0; i < invList.size(); i++) {
-            inv.setStack(i, invList.get(i));
-        }
+        BlockEntity blockEntity = world.getBlockEntity(pos);
+        if (!(blockEntity instanceof ChestBlockEntity)) return ActionResult.PASS;
+        AccessorChestBlockEntity chest = (AccessorChestBlockEntity) blockEntity;
+        Inventories.fromTag(holding.getTag(), chest.getInventory());
         holder.setHolding(null);
         sync(holder);
         return ActionResult.SUCCESS;

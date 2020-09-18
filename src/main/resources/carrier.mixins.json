@@ -4,6 +4,7 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "AccessorBarrelBlockEntity",
+    "AccessorChestBlockEntity",
     "AccessorEntity",
     "MixinAnimalEntity",
     "MixinBarrelBlock",
