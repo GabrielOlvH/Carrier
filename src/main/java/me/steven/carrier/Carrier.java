@@ -25,5 +25,6 @@ public class Carrier implements ModInitializer {
         ServerTickEvents.END_WORLD_TICK.register(new ServerWorldTickCallback());
         UseBlockCallback.EVENT.register(new HolderInteractCallback());
         CarriableRegistry.INSTANCE.register(new Identifier("carrier", "chest"), (Carriable) Blocks.CHEST);
+        CarriableRegistry.INSTANCE.register(new Identifier("carrier", "spawner"), (Carriable) Blocks.SPAWNER);
     }
 }

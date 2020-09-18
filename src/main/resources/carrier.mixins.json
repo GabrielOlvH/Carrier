@@ -4,10 +4,11 @@
   "compatibilityLevel": "JAVA_8",
   "mixins": [
     "AccessorEntity",
-    "MixinChestBlock",
     "MixinAnimalEntity",
+    "MixinChestBlock",
     "MixinPlayerEntity",
-    "MixinPlayerManager"
+    "MixinPlayerManager",
+    "MixinSpawnerBlock"
   ],
   "client": [
     "MixinGameRenderer",

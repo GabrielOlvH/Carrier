@@ -13,6 +13,7 @@ import net.minecraft.world.World;
 public class HolderInteractCallback implements UseBlockCallback {
     @Override
     public ActionResult interact(PlayerEntity player, World world, Hand hand, BlockHitResult hitResult) {
+        if (world.isClient || hand == Hand.OFF_HAND) return ActionResult.PASS;
         BlockPos pos = hitResult.getBlockPos();
         Block block = world.getBlockState(pos).getBlock();
         if (player instanceof Holder) {
@@ -21,7 +22,8 @@ public class HolderInteractCallback implements UseBlockCallback {
             if (holding == null && player.isSneaking() && block instanceof Carriable) {
                 Carriable carriable = (Carriable) block;
                 ActionResult actionResult = carriable.tryPickup(holder, world, pos, null);
-                if (actionResult.isAccepted()) return actionResult;
+                if (actionResult.isAccepted())
+                    return actionResult;
             }
             if (holding == null) return ActionResult.PASS;
             Carriable carriable = CarriableRegistry.INSTANCE.get(holding.getType());
