@@ -13,13 +13,11 @@ public class ServerWorldTickCallback implements ServerTickEvents.EndWorldTick {
     @Override
     public void onEndTick(ServerWorld serverWorld) {
         for (ServerPlayerEntity player : serverWorld.getPlayers()) {
-            if (player instanceof Holder) {
-                Holder holder = (Holder) player;
-                Holding holding = holder.getHolding();
-                if (holding != null) {
-                    player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 20, 2));
-                    player.getHungerManager().addExhaustion(0.05f);
-                }
+            Holder holder = Carrier.HOLDER.get(player);
+            Holding holding = holder.getHolding();
+            if (holding != null) {
+                player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 20, 2));
+                player.getHungerManager().addExhaustion(0.05f);
             }
         }
     }

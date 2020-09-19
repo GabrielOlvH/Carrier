@@ -27,8 +27,7 @@ public class HolderInteractCallback implements UseBlockCallback, UseEntityCallba
         if (world.isClient || hand == Hand.OFF_HAND) return ActionResult.PASS;
         BlockPos pos = hitResult.getBlockPos();
         Block block = world.getBlockState(pos).getBlock();
-        if (player instanceof Holder) {
-            Holder holder = (Holder) player;
+        Holder holder = Carrier.HOLDER.get(player);
             Holding holding = holder.getHolding();
             if (holding == null && player.isSneaking() && CarriableRegistry.INSTANCE.contains(block)) {
                 Carriable<?> carriable = CarriableRegistry.INSTANCE.get(block);
@@ -39,10 +38,10 @@ public class HolderInteractCallback implements UseBlockCallback, UseEntityCallba
             if (holding == null) return ActionResult.PASS;
             Carriable<?> carriable = CarriableRegistry.INSTANCE.get(holding.getType());
             if (carriable != null) {
-                ActionResult actionResult = carriable.tryPlace(holder, world, new CarriablePlacementContext(holder, carriable, pos.offset(hitResult.getSide()), hitResult.getSide()));
+                ActionResult actionResult = carriable.tryPlace(holder, world, new CarriablePlacementContext(holder, carriable, pos.offset(hitResult.getSide()), hitResult.getSide(), player.getHorizontalFacing()));
                 if (actionResult.isAccepted()) return actionResult;
             }
-        }
+
         return ActionResult.PASS;
     }
 
@@ -50,8 +49,7 @@ public class HolderInteractCallback implements UseBlockCallback, UseEntityCallba
     public ActionResult interact(PlayerEntity player, World world, Hand hand, Entity entity, EntityHitResult hitResult) {
         if (world.isClient || hand == Hand.OFF_HAND) return ActionResult.PASS;
         BlockPos pos = entity.getBlockPos();
-        if (player instanceof Holder) {
-            Holder holder = (Holder) player;
+        Holder holder = Carrier.HOLDER.get(player);
             Holding holding = holder.getHolding();
             if (holding == null && player.isSneaking() && CarriableRegistry.INSTANCE.contains(entity.getType())) {
                 Carriable<?> carriable = CarriableRegistry.INSTANCE.get(entity.getType());
@@ -62,10 +60,9 @@ public class HolderInteractCallback implements UseBlockCallback, UseEntityCallba
             if (holding == null) return ActionResult.PASS;
             Carriable<?> carriable = CarriableRegistry.INSTANCE.get(holding.getType());
             if (carriable != null) {
-                ActionResult actionResult = carriable.tryPlace(holder, world, new CarriablePlacementContext(holder, carriable, pos, player.getHorizontalFacing()));
+                ActionResult actionResult = carriable.tryPlace(holder, world, new CarriablePlacementContext(holder, carriable, pos, player.getHorizontalFacing(), player.getHorizontalFacing()));
                 if (actionResult.isAccepted()) return actionResult;
             }
-        }
         return ActionResult.PASS;
     }
 }

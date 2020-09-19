@@ -20,13 +20,18 @@
     "main": [
         "me.steven.carrier.Carrier"
     ],
-    "client": [
-      "me.steven.carrier.CarrierClient"
+    "cardinal-components-entity": [
+      "me.steven.carrier.Carrier"
     ]
   },
   "mixins": [
     "carrier.mixins.json"
   ],
+  "custom": {
+    "cardinal-components": [
+      "carrier:holder"
+    ]
+  },
   "depends": {
     "fabricloader": ">=0.8.7",
     "fabric": "*",

@@ -6,6 +6,8 @@ import me.steven.carrier.api.CarriablePlacementContext;
 import me.steven.carrier.api.Holder;
 import me.steven.carrier.api.Holding;
 import me.steven.carrier.mixin.AccessorBarrelBlockEntity;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.block.BarrelBlock;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -48,7 +50,6 @@ public class CarriableBarrel implements Carriable<BarrelBlock> {
         AccessorBarrelBlockEntity barrel = (AccessorBarrelBlockEntity) blockEntity;
         Holding holding = new Holding(new Identifier(Carrier.MOD_ID, "barrel"), Inventories.toTag(new CompoundTag(), barrel.getInventory()));
         holder.setHolding(holding);
-        sync(holder);
         barrel.getInventory().clear();
         world.setBlockState(pos, Blocks.AIR.getDefaultState());
         return ActionResult.SUCCESS;
@@ -61,28 +62,24 @@ public class CarriableBarrel implements Carriable<BarrelBlock> {
         if (holding == null) return ActionResult.PASS;
         DefaultedList<ItemStack> invList = DefaultedList.ofSize(27, ItemStack.EMPTY);
         Inventories.fromTag(holding.getTag(), invList);
-        PlayerEntity player = (PlayerEntity) holder;
         BlockPos pos = ctx.getBlockPos();
-        world.setBlockState(pos, Blocks.BARREL.getDefaultState().with(BarrelBlock.FACING, player.getHorizontalFacing().getOpposite()));
+        world.setBlockState(pos, Blocks.BARREL.getDefaultState().with(BarrelBlock.FACING, ctx.getPlayerLook()));
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (!(blockEntity instanceof BarrelBlockEntity)) return ActionResult.PASS;
         AccessorBarrelBlockEntity barrel = (AccessorBarrelBlockEntity) blockEntity;
         Inventories.fromTag(holding.getTag(), barrel.getInventory());
         holder.setHolding(null);
-        sync(holder);
         return ActionResult.SUCCESS;
     }
 
     @Override
-    public void render(@NotNull Holder holder, @NotNull MatrixStack matrices, @NotNull VertexConsumerProvider vcp, float tickDelta, int light) {
-        if (holder instanceof PlayerEntity) {
-            PlayerEntity player = (PlayerEntity) holder;
-            matrices.push();
-            matrices.scale(0.6f, 0.6f, 0.6f);
-            matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-player.bodyYaw));
-            matrices.translate(-0.5, 0.8, 0.2);
-            MinecraftClient.getInstance().getBlockRenderManager().renderBlockAsEntity(RENDER_STATE, matrices, vcp, light, OverlayTexture.DEFAULT_UV);
-            matrices.pop();
-        }
+    @Environment(EnvType.CLIENT)
+    public void render(@NotNull PlayerEntity player, @NotNull Holder holder, @NotNull MatrixStack matrices, @NotNull VertexConsumerProvider vcp, float tickDelta, int light) {
+        matrices.push();
+        matrices.scale(0.6f, 0.6f, 0.6f);
+        matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-player.bodyYaw));
+        matrices.translate(-0.5, 0.8, 0.2);
+        MinecraftClient.getInstance().getBlockRenderManager().renderBlockAsEntity(RENDER_STATE, matrices, vcp, light, OverlayTexture.DEFAULT_UV);
+        matrices.pop();
     }
 }

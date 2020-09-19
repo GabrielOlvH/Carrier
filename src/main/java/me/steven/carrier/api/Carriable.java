@@ -25,17 +25,6 @@ public interface Carriable<T> {
     @NotNull
     ActionResult tryPlace(@NotNull Holder holder, @NotNull World world, @NotNull CarriablePlacementContext ctx);
 
-    default void sync(Holder holder) {
-        PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
-        Holding holding = holder.getHolding();
-        buf.writeBoolean(holding == null);
-        if (holding != null) {
-            buf.writeCompoundTag(holding.getTag());
-            buf.writeIdentifier(holding.getType());
-        }
-        ServerSidePacketRegistry.INSTANCE.sendToPlayer((PlayerEntity) holder, Carrier.SYNC_CARRYING_PACKET, buf);
-    }
-
     @Environment(EnvType.CLIENT)
-    void render(@NotNull Holder holder, @NotNull MatrixStack matrices, @NotNull VertexConsumerProvider vcp, float tickDelta, int light);
+    void render(@NotNull PlayerEntity player, @NotNull Holder holder, @NotNull MatrixStack matrices, @NotNull VertexConsumerProvider vcp, float tickDelta, int light);
 }

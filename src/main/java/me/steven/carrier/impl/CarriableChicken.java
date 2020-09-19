@@ -4,6 +4,8 @@ import me.steven.carrier.api.Carriable;
 import me.steven.carrier.api.CarriableRegistry;
 import me.steven.carrier.api.EntityCarriable;
 import me.steven.carrier.api.Holder;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderer;
@@ -20,7 +22,9 @@ import org.jetbrains.annotations.NotNull;
 public class CarriableChicken  extends EntityCarriable<ChickenEntity> {
 
     public static final Identifier TYPE = new Identifier("carrier", "chicken");
+    @Environment(EnvType.CLIENT)
     private static ChickenEntity dummyChicken;
+    @Environment(EnvType.CLIENT)
     private static ChickenEntityRenderer chickenRenderer;
 
     public CarriableChicken() {
@@ -34,6 +38,7 @@ public class CarriableChicken  extends EntityCarriable<ChickenEntity> {
     }
 
     @Override
+    @Environment(EnvType.CLIENT)
     public ChickenEntity getEntity() {
         if (dummyChicken == null)
             dummyChicken = new ChickenEntity(EntityType.CHICKEN, MinecraftClient.getInstance().world);
@@ -41,6 +46,7 @@ public class CarriableChicken  extends EntityCarriable<ChickenEntity> {
     }
 
     @Override
+    @Environment(EnvType.CLIENT)
     public EntityRenderer<ChickenEntity> getEntityRenderer() {
         if (chickenRenderer == null)
             chickenRenderer = new ChickenEntityRenderer(MinecraftClient.getInstance().getEntityRenderDispatcher());
@@ -49,8 +55,8 @@ public class CarriableChicken  extends EntityCarriable<ChickenEntity> {
 
 
     @Override
-    public void render(@NotNull Holder holder, @NotNull MatrixStack matrices, @NotNull VertexConsumerProvider vcp, float tickDelta, int light) {
-        PlayerEntity player = (PlayerEntity) holder;
+    @Environment(EnvType.CLIENT)
+    public void render(@NotNull PlayerEntity player, @NotNull Holder holder, @NotNull MatrixStack matrices, @NotNull VertexConsumerProvider vcp, float tickDelta, int light) {
         updateEntity(holder.getHolding());
         matrices.push();
         matrices.scale(0.9f, 0.9f, 0.9f);

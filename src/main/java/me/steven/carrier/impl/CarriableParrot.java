@@ -4,6 +4,8 @@ import me.steven.carrier.api.Carriable;
 import me.steven.carrier.api.CarriableRegistry;
 import me.steven.carrier.api.EntityCarriable;
 import me.steven.carrier.api.Holder;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderer;
@@ -19,7 +21,9 @@ import org.jetbrains.annotations.NotNull;
 public class CarriableParrot extends EntityCarriable<ParrotEntity> {
 
     public static final Identifier TYPE = new Identifier("carrier", "parrot");
+    @Environment(EnvType.CLIENT)
     private static ParrotEntity dummyParrot;
+    @Environment(EnvType.CLIENT)
     private static ParrotEntityRenderer parrotRenderer;
 
     public CarriableParrot() {
@@ -33,6 +37,7 @@ public class CarriableParrot extends EntityCarriable<ParrotEntity> {
     }
 
     @Override
+    @Environment(EnvType.CLIENT)
     public ParrotEntity getEntity() {
         if (dummyParrot == null)
             dummyParrot = new ParrotEntity(EntityType.PARROT, MinecraftClient.getInstance().world);
@@ -40,6 +45,7 @@ public class CarriableParrot extends EntityCarriable<ParrotEntity> {
     }
 
     @Override
+    @Environment(EnvType.CLIENT)
     public EntityRenderer<ParrotEntity> getEntityRenderer() {
         if (parrotRenderer == null)
             parrotRenderer = new ParrotEntityRenderer(MinecraftClient.getInstance().getEntityRenderDispatcher());
@@ -48,8 +54,8 @@ public class CarriableParrot extends EntityCarriable<ParrotEntity> {
 
 
     @Override
-    public void render(@NotNull Holder holder, @NotNull MatrixStack matrices, @NotNull VertexConsumerProvider vcp, float tickDelta, int light) {
-        PlayerEntity player = (PlayerEntity) holder;
+    @Environment(EnvType.CLIENT)
+    public void render(@NotNull PlayerEntity player, @NotNull Holder holder, @NotNull MatrixStack matrices, @NotNull VertexConsumerProvider vcp, float tickDelta, int light) {
         updateEntity(holder.getHolding());
         matrices.push();
         matrices.scale(0.9f, 0.9f, 0.9f);

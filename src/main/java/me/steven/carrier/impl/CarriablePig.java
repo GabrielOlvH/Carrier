@@ -4,6 +4,8 @@ import me.steven.carrier.api.Carriable;
 import me.steven.carrier.api.CarriableRegistry;
 import me.steven.carrier.api.EntityCarriable;
 import me.steven.carrier.api.Holder;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderer;
@@ -19,7 +21,9 @@ import org.jetbrains.annotations.NotNull;
 public class CarriablePig extends EntityCarriable<PigEntity>  {
 
     public static final Identifier TYPE = new Identifier("carrier", "pig");
+    @Environment(EnvType.CLIENT)
     private static PigEntity dummyPig;
+    @Environment(EnvType.CLIENT)
     private static PigEntityRenderer renderer;
 
     @NotNull
@@ -33,6 +37,7 @@ public class CarriablePig extends EntityCarriable<PigEntity>  {
     }
 
     @Override
+    @Environment(EnvType.CLIENT)
     public PigEntity getEntity() {
         if (dummyPig == null)
             dummyPig = new PigEntity(EntityType.PIG, MinecraftClient.getInstance().world);
@@ -40,6 +45,7 @@ public class CarriablePig extends EntityCarriable<PigEntity>  {
     }
 
     @Override
+    @Environment(EnvType.CLIENT)
     public EntityRenderer<PigEntity> getEntityRenderer() {
         if (renderer == null)
             renderer = new PigEntityRenderer(MinecraftClient.getInstance().getEntityRenderDispatcher());
@@ -48,8 +54,8 @@ public class CarriablePig extends EntityCarriable<PigEntity>  {
 
 
     @Override
-    public void render(@NotNull Holder holder, @NotNull MatrixStack matrices, @NotNull VertexConsumerProvider vcp, float tickDelta, int light) {
-        PlayerEntity player = (PlayerEntity) holder;
+    @Environment(EnvType.CLIENT)
+    public void render(@NotNull PlayerEntity player, @NotNull Holder holder, @NotNull MatrixStack matrices, @NotNull VertexConsumerProvider vcp, float tickDelta, int light) {
         updateEntity(holder.getHolding());
         matrices.push();
         matrices.scale(0.6f, 0.6f, 0.6f);

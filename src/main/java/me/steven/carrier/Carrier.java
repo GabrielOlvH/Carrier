@@ -1,7 +1,12 @@
 package me.steven.carrier;
 
+import dev.onyxstudios.cca.api.v3.component.ComponentKey;
+import dev.onyxstudios.cca.api.v3.component.ComponentRegistryV3;
+import dev.onyxstudios.cca.api.v3.entity.EntityComponentFactoryRegistry;
+import dev.onyxstudios.cca.api.v3.entity.EntityComponentInitializer;
 import me.steven.carrier.api.*;
 import me.steven.carrier.impl.*;
+import nerdhub.cardinal.components.api.util.RespawnCopyStrategy;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
@@ -14,7 +19,9 @@ import net.minecraft.util.Identifier;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class Carrier implements ModInitializer {
+public class Carrier implements ModInitializer, EntityComponentInitializer {
+
+    public static final ComponentKey<Holder> HOLDER = ComponentRegistryV3.INSTANCE.getOrCreate(new Identifier("carrier", "holder"), Holder.class);
 
     public static final String MOD_ID = "carrier";
 
@@ -37,5 +44,10 @@ public class Carrier implements ModInitializer {
         CarriableRegistry.INSTANCE.register(new Identifier("carrier", "chest"), new CarriableChest());
         CarriableRegistry.INSTANCE.register(new Identifier("carrier", "barrel"), new CarriableBarrel());
         CarriableRegistry.INSTANCE.register(new Identifier("carrier", "spawner"), new CarriableSpawner());
+    }
+
+    @Override
+    public void registerEntityComponentFactories(EntityComponentFactoryRegistry registry) {
+        registry.registerForPlayers(HOLDER, Holder::new, RespawnCopyStrategy.ALWAYS_COPY);
     }
 }

@@ -6,6 +6,8 @@ import me.steven.carrier.api.CarriablePlacementContext;
 import me.steven.carrier.api.Holder;
 import me.steven.carrier.api.Holding;
 import me.steven.carrier.mixin.AccessorBlockEntity;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.SpawnerBlock;
@@ -16,9 +18,13 @@ import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
 import net.minecraft.client.render.block.entity.MobSpawnerBlockEntityRenderer;
+import net.minecraft.client.render.entity.EntityRenderer;
+import net.minecraft.client.render.entity.RabbitEntityRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EntityType;
+import net.minecraft.entity.passive.RabbitEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.ActionResult;
@@ -31,8 +37,25 @@ import org.jetbrains.annotations.Nullable;
 
 public class CarriableSpawner implements Carriable<SpawnerBlock> {
 
-    private static final MobSpawnerBlockEntity dummySpawner = new MobSpawnerBlockEntity();
-    private static final MobSpawnerBlockEntityRenderer dummyRenderer = new MobSpawnerBlockEntityRenderer(BlockEntityRenderDispatcher.INSTANCE);
+    @Environment(EnvType.CLIENT)
+    private static MobSpawnerBlockEntity dummySpawner = null;
+    @Environment(EnvType.CLIENT)
+    private static MobSpawnerBlockEntityRenderer dummyRenderer = null;
+
+    @Environment(EnvType.CLIENT)
+    public MobSpawnerBlockEntity getEntity() {
+        if (dummySpawner == null)
+            dummySpawner = new MobSpawnerBlockEntity();
+        return dummySpawner;
+    }
+
+    @Environment(EnvType.CLIENT)
+    public MobSpawnerBlockEntityRenderer getEntityRenderer() {
+        if (dummyRenderer == null)
+            dummyRenderer = new MobSpawnerBlockEntityRenderer(BlockEntityRenderDispatcher.INSTANCE);
+        return dummyRenderer;
+    }
+
 
     @Override
     public @NotNull SpawnerBlock getParent() {
@@ -47,7 +70,6 @@ public class CarriableSpawner implements Carriable<SpawnerBlock> {
         MobSpawnerBlockEntity spawner = (MobSpawnerBlockEntity) blockEntity;
         Holding holding = new Holding(new Identifier(Carrier.MOD_ID, "spawner"), spawner.getLogic().toTag(new CompoundTag()));
         holder.setHolding(holding);
-        sync(holder);
         world.setBlockState(pos, Blocks.AIR.getDefaultState());
         return ActionResult.SUCCESS;
     }
@@ -64,25 +86,22 @@ public class CarriableSpawner implements Carriable<SpawnerBlock> {
         MobSpawnerBlockEntity spawner = (MobSpawnerBlockEntity) blockEntity;
         spawner.getLogic().fromTag(holding.getTag());
         holder.setHolding(null);
-        sync(holder);
         return ActionResult.SUCCESS;
     }
 
     @Override
-    public void render(@NotNull Holder holder, @NotNull MatrixStack matrices, @NotNull VertexConsumerProvider vcp, float tickDelta, int light) {
-        if (holder instanceof PlayerEntity) {
-            dummySpawner.getLogic().fromTag(holder.getHolding().getTag());
-            BlockState blockState = Blocks.SPAWNER.getDefaultState();
-            PlayerEntity player = (PlayerEntity) holder;
-            ((AccessorBlockEntity) dummySpawner).setWorld(player.world);
-            matrices.push();
-            matrices.scale(0.6f, 0.6f, 0.6f);
-            matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-player.bodyYaw));
-            matrices.translate(-0.5, 0.8, 0.2);
-            MinecraftClient.getInstance().getBlockRenderManager().renderBlockAsEntity(blockState, matrices, vcp, light, OverlayTexture.DEFAULT_UV);
-            if (MinecraftClient.isFancyGraphicsOrBetter())
-                dummyRenderer.render(dummySpawner, tickDelta, matrices, vcp, light, OverlayTexture.DEFAULT_UV);
-            matrices.pop();
-        }
+    @Environment(EnvType.CLIENT)
+    public void render(@NotNull PlayerEntity player, @NotNull Holder holder, @NotNull MatrixStack matrices, @NotNull VertexConsumerProvider vcp, float tickDelta, int light) {
+        getEntity().getLogic().fromTag(holder.getHolding().getTag());
+        BlockState blockState = Blocks.SPAWNER.getDefaultState();
+        ((AccessorBlockEntity) getEntity()).setWorld(player.world);
+        matrices.push();
+        matrices.scale(0.6f, 0.6f, 0.6f);
+        matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-player.bodyYaw));
+        matrices.translate(-0.5, 0.8, 0.2);
+        MinecraftClient.getInstance().getBlockRenderManager().renderBlockAsEntity(blockState, matrices, vcp, light, OverlayTexture.DEFAULT_UV);
+        if (MinecraftClient.isFancyGraphicsOrBetter())
+            getEntityRenderer().render(getEntity(), tickDelta, matrices, vcp, light, OverlayTexture.DEFAULT_UV);
+        matrices.pop();
     }
 }

@@ -1,21 +1,12 @@
 package me.steven.carrier.api;
 
-import me.steven.carrier.Carrier;
-import me.steven.carrier.CarrierClient;
 import me.steven.carrier.mixin.AccessorEntity;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderer;
-import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
@@ -52,8 +43,7 @@ public abstract class EntityCarriable<T extends Entity> implements Carriable<Ent
         ((AccessorEntity) entity).carrier_writeCustomDataToTag(tag);
         Holding holding = new Holding(type, tag);
         holder.setHolding(holding);
-        Carriable carriable = CarriableRegistry.INSTANCE.get(holding.getType());
-        carriable.sync(holder);
+        Carriable<?> carriable = CarriableRegistry.INSTANCE.get(holding.getType());
         entity.remove();
         return ActionResult.SUCCESS;
     }
@@ -71,7 +61,6 @@ public abstract class EntityCarriable<T extends Entity> implements Carriable<Ent
         world.spawnEntity(entity);
         holder.setHolding(null);
         Carriable carriable = CarriableRegistry.INSTANCE.get(holding.getType());
-        carriable.sync(holder);
         return ActionResult.SUCCESS;
     }
 

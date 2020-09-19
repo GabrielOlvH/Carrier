@@ -1,5 +1,6 @@
 package me.steven.carrier.mixin;
 
+import me.steven.carrier.Carrier;
 import me.steven.carrier.api.Holder;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.player.PlayerInventory;
@@ -20,9 +21,7 @@ public class MixinPlayerInventory {
 
     @Inject(method = "scrollInHotbar", at = @At("HEAD"), cancellable = true)
     private void carrier_cancelSelectedSlotChange(double scrollAmount, CallbackInfo ci) {
-        if (player instanceof Holder) {
-            Holder holder = (Holder) player;
-            if (holder.getHolding() != null) ci.cancel();
-        }
+        Holder holder = Carrier.HOLDER.get(player);
+        if (holder.getHolding() != null) ci.cancel();
     }
 }

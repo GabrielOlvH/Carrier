@@ -5,9 +5,7 @@
   "mixins": [
     "AccessorBarrelBlockEntity",
     "AccessorChestBlockEntity",
-    "AccessorEntity",
-    "MixinPlayerEntity",
-    "MixinPlayerManager"
+    "AccessorEntity"
   ],
   "client": [
     "AccessorBlockEntity",

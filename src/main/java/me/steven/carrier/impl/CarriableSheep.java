@@ -4,6 +4,8 @@ import me.steven.carrier.api.Carriable;
 import me.steven.carrier.api.CarriableRegistry;
 import me.steven.carrier.api.EntityCarriable;
 import me.steven.carrier.api.Holder;
+import net.fabricmc.api.EnvType;
+import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderer;
@@ -19,8 +21,9 @@ import org.jetbrains.annotations.NotNull;
 public class CarriableSheep extends EntityCarriable<SheepEntity> {
 
     public static final Identifier TYPE = new Identifier("carrier", "sheep");
-    public static final Carriable INSTANCE = CarriableRegistry.INSTANCE.register(TYPE, new CarriableSheep());
+    @Environment(EnvType.CLIENT)
     private static SheepEntity dummySheep;
+    @Environment(EnvType.CLIENT)
     private static SheepEntityRenderer sheepRenderer;
 
     public CarriableSheep() {
@@ -34,6 +37,7 @@ public class CarriableSheep extends EntityCarriable<SheepEntity> {
     }
 
     @Override
+    @Environment(EnvType.CLIENT)
     public SheepEntity getEntity() {
         if (dummySheep == null)
             dummySheep = new SheepEntity(EntityType.SHEEP, MinecraftClient.getInstance().world);
@@ -41,6 +45,7 @@ public class CarriableSheep extends EntityCarriable<SheepEntity> {
     }
 
     @Override
+    @Environment(EnvType.CLIENT)
     public EntityRenderer<SheepEntity> getEntityRenderer() {
         if (sheepRenderer == null)
             sheepRenderer = new SheepEntityRenderer(MinecraftClient.getInstance().getEntityRenderDispatcher());
@@ -49,8 +54,8 @@ public class CarriableSheep extends EntityCarriable<SheepEntity> {
 
 
     @Override
-    public void render(@NotNull Holder holder, @NotNull MatrixStack matrices, @NotNull VertexConsumerProvider vcp, float tickDelta, int light) {
-        PlayerEntity player = (PlayerEntity) holder;
+    @Environment(EnvType.CLIENT)
+    public void render(@NotNull PlayerEntity player, @NotNull Holder holder, @NotNull MatrixStack matrices, @NotNull VertexConsumerProvider vcp, float tickDelta, int light) {
         updateEntity(holder.getHolding());
         matrices.push();
         matrices.scale(0.6f, 0.6f, 0.6f);
