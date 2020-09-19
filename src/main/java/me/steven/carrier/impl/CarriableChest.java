@@ -20,7 +20,6 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.Inventories;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
@@ -43,7 +42,7 @@ public class CarriableChest implements Carriable<ChestBlock> {
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (!(blockEntity instanceof ChestBlockEntity)) return ActionResult.PASS;
         AccessorChestBlockEntity chest = (AccessorChestBlockEntity) blockEntity;
-        Holding holding = new Holding(new Identifier(Carrier.MOD_ID, "chest"), Inventories.toTag(new CompoundTag(), chest.getInventory()));
+        Holding holding = new Holding(new Identifier(Carrier.MOD_ID, "chest"), blockEntity.toTag(new CompoundTag()));
         holder.setHolding(holding);
         chest.getInventory().clear();
         world.setBlockState(pos, Blocks.AIR.getDefaultState());
@@ -56,11 +55,12 @@ public class CarriableChest implements Carriable<ChestBlock> {
         Holding holding = holder.getHolding();
         if (holding == null) return ActionResult.PASS;
         BlockPos pos = ctx.getBlockPos();
-        world.setBlockState(pos, Blocks.CHEST.getDefaultState().with(ChestBlock.FACING, ctx.getPlayerLook().getOpposite()));
+        BlockState state = Blocks.CHEST.getDefaultState().with(ChestBlock.FACING, ctx.getPlayerLook().getOpposite());
+        world.setBlockState(pos, state);
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (!(blockEntity instanceof ChestBlockEntity)) return ActionResult.PASS;
-        AccessorChestBlockEntity chest = (AccessorChestBlockEntity) blockEntity;
-        Inventories.fromTag(holding.getTag(), chest.getInventory());
+        blockEntity.fromTag(state, holding.getTag());
+        blockEntity.setPos(pos);
         holder.setHolding(null);
         return ActionResult.SUCCESS;
     }
