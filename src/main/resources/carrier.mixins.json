@@ -6,12 +6,8 @@
     "AccessorBarrelBlockEntity",
     "AccessorChestBlockEntity",
     "AccessorEntity",
-    "MixinAnimalEntity",
-    "MixinBarrelBlock",
-    "MixinChestBlock",
     "MixinPlayerEntity",
-    "MixinPlayerManager",
-    "MixinSpawnerBlock"
+    "MixinPlayerManager"
   ],
   "client": [
     "AccessorBlockEntity",

@@ -19,12 +19,17 @@ import org.jetbrains.annotations.NotNull;
 public class CarriableWolf extends EntityCarriable<WolfEntity> {
 
     public static final Identifier TYPE = new Identifier("carrier", "wolf");
-    public static final Carriable INSTANCE = CarriableRegistry.INSTANCE.register(TYPE, new CarriableWolf());
     private static WolfEntity dummyWolf;
     private static WolfEntityRenderer wolfRenderer;
 
-    private CarriableWolf() {
+    public CarriableWolf() {
         super(TYPE, EntityType.WOLF);
+    }
+
+    @NotNull
+    @Override
+    public EntityType<WolfEntity> getParent() {
+        return EntityType.WOLF;
     }
 
     @Override

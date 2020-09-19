@@ -23,8 +23,14 @@ public class CarriableSheep extends EntityCarriable<SheepEntity> {
     private static SheepEntity dummySheep;
     private static SheepEntityRenderer sheepRenderer;
 
-    private CarriableSheep() {
+    public CarriableSheep() {
         super(TYPE, EntityType.SHEEP);
+    }
+
+    @NotNull
+    @Override
+    public EntityType<SheepEntity> getParent() {
+        return EntityType.SHEEP;
     }
 
     @Override

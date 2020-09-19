@@ -1,11 +1,11 @@
-package me.steven.carrier.mixin;
+package me.steven.carrier.impl;
 
 import me.steven.carrier.Carrier;
-import me.steven.carrier.Utils;
 import me.steven.carrier.api.Carriable;
 import me.steven.carrier.api.CarriablePlacementContext;
 import me.steven.carrier.api.Holder;
 import me.steven.carrier.api.Holding;
+import me.steven.carrier.mixin.AccessorChestBlockEntity;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
 import net.minecraft.block.ChestBlock;
@@ -19,24 +19,20 @@ import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventories;
-import net.minecraft.inventory.Inventory;
-import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.state.property.DirectionProperty;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.collection.DefaultedList;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-@Mixin(ChestBlock.class)
-public class MixinChestBlock implements Carriable {
 
-    @Shadow @Final public static DirectionProperty FACING;
+public class CarriableChest implements Carriable<ChestBlock> {
+
+    @Override
+    public @NotNull ChestBlock getParent() {
+        return (ChestBlock) Blocks.CHEST;
+    }
 
     @Override
     public @NotNull ActionResult tryPickup(@NotNull Holder holder, @NotNull World world, @NotNull BlockPos pos, @Nullable Entity entity) {
@@ -59,7 +55,7 @@ public class MixinChestBlock implements Carriable {
         if (holding == null) return ActionResult.PASS;
         PlayerEntity player = (PlayerEntity) holder;
         BlockPos pos = ctx.getBlockPos();
-        world.setBlockState(pos, Blocks.CHEST.getDefaultState().with(FACING, player.getHorizontalFacing().getOpposite()));
+        world.setBlockState(pos, Blocks.CHEST.getDefaultState().with(ChestBlock.FACING, player.getHorizontalFacing().getOpposite()));
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (!(blockEntity instanceof ChestBlockEntity)) return ActionResult.PASS;
         AccessorChestBlockEntity chest = (AccessorChestBlockEntity) blockEntity;

@@ -24,7 +24,7 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public abstract class EntityCarriable<T extends Entity> implements Carriable {
+public abstract class EntityCarriable<T extends Entity> implements Carriable<EntityType<T>> {
 
     private final Identifier type;
     private final EntityType<T> entityType;

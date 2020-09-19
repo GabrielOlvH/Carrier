@@ -19,12 +19,17 @@ import org.jetbrains.annotations.NotNull;
 public class CarriableTurtle extends EntityCarriable<TurtleEntity> {
 
     public static final Identifier TYPE = new Identifier("carrier", "turtle");
-    public static final Carriable INSTANCE = CarriableRegistry.INSTANCE.register(TYPE, new CarriableTurtle());
     private static TurtleEntity dummyTurtle;
     private static TurtleEntityRenderer turtleRenderer;
 
-    private CarriableTurtle() {
+    public CarriableTurtle() {
         super(TYPE, EntityType.TURTLE);
+    }
+
+    @NotNull
+    @Override
+    public EntityType<TurtleEntity> getParent() {
+        return EntityType.TURTLE;
     }
 
     @Override

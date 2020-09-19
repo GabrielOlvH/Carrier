@@ -16,7 +16,10 @@ import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public interface Carriable {
+public interface Carriable<T> {
+
+    @NotNull
+    T getParent();
     @NotNull
     ActionResult tryPickup(@NotNull Holder holder, @NotNull World world, @NotNull BlockPos blockPos, @Nullable Entity entity);
     @NotNull

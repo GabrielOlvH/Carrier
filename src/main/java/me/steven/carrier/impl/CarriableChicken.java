@@ -20,12 +20,17 @@ import org.jetbrains.annotations.NotNull;
 public class CarriableChicken  extends EntityCarriable<ChickenEntity> {
 
     public static final Identifier TYPE = new Identifier("carrier", "chicken");
-    public static final Carriable INSTANCE = CarriableRegistry.INSTANCE.register(TYPE, new CarriableChicken());
     private static ChickenEntity dummyChicken;
     private static ChickenEntityRenderer chickenRenderer;
 
-    private CarriableChicken() {
+    public CarriableChicken() {
         super(TYPE, EntityType.CHICKEN);
+    }
+
+    @NotNull
+    @Override
+    public EntityType<ChickenEntity> getParent() {
+        return EntityType.CHICKEN;
     }
 
     @Override

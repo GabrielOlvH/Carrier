@@ -19,11 +19,16 @@ import org.jetbrains.annotations.NotNull;
 public class CarriablePig extends EntityCarriable<PigEntity>  {
 
     public static final Identifier TYPE = new Identifier("carrier", "pig");
-    public static final Carriable INSTANCE = CarriableRegistry.INSTANCE.register(TYPE, new CarriablePig());
     private static PigEntity dummyPig;
     private static PigEntityRenderer renderer;
 
-    private CarriablePig() {
+    @NotNull
+    @Override
+    public EntityType<PigEntity> getParent() {
+        return EntityType.PIG;
+    }
+
+    public CarriablePig() {
         super(TYPE, EntityType.PIG);
     }
 

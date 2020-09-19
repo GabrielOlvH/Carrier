@@ -19,12 +19,17 @@ import org.jetbrains.annotations.NotNull;
 public class CarriableParrot extends EntityCarriable<ParrotEntity> {
 
     public static final Identifier TYPE = new Identifier("carrier", "parrot");
-    public static final Carriable INSTANCE = CarriableRegistry.INSTANCE.register(TYPE, new CarriableParrot());
     private static ParrotEntity dummyParrot;
     private static ParrotEntityRenderer parrotRenderer;
 
-    private CarriableParrot() {
+    public CarriableParrot() {
         super(TYPE, EntityType.PARROT);
+    }
+
+    @NotNull
+    @Override
+    public EntityType<ParrotEntity> getParent() {
+        return EntityType.PARROT;
     }
 
     @Override
