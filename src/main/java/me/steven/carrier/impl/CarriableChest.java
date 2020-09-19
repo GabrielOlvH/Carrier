@@ -56,7 +56,7 @@ public class CarriableChest implements Carriable<ChestBlock> {
         Holding holding = holder.getHolding();
         if (holding == null) return ActionResult.PASS;
         BlockPos pos = ctx.getBlockPos();
-        world.setBlockState(pos, Blocks.CHEST.getDefaultState().with(ChestBlock.FACING, ctx.getPlayerLook()));
+        world.setBlockState(pos, Blocks.CHEST.getDefaultState().with(ChestBlock.FACING, ctx.getPlayerLook().getOpposite()));
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (!(blockEntity instanceof ChestBlockEntity)) return ActionResult.PASS;
         AccessorChestBlockEntity chest = (AccessorChestBlockEntity) blockEntity;
