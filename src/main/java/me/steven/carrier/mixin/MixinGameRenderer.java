@@ -22,7 +22,7 @@ public abstract class MixinGameRenderer {
             Holder holder = (Holder) player;
             Holding holding = holder.getHolding();
             if (holding == null) return ;
-            Carriable carriable = CarriableRegistry.INSTANCE.get(holding.getType());
+            Carriable<?> carriable = CarriableRegistry.INSTANCE.get(holding.getType());
             if (carriable != null) {
                 ci.cancel();
             }

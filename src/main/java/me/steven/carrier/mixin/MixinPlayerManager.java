@@ -20,7 +20,7 @@ public class MixinPlayerManager {
             Holder holder = (Holder) player;
             Holding holding = holder.getHolding();
             if (holding == null || !CarriableRegistry.INSTANCE.contains(holding.getType())) return;
-            Carriable carriable = CarriableRegistry.INSTANCE.get(holding.getType());
+            Carriable<?> carriable = CarriableRegistry.INSTANCE.get(holding.getType());
             carriable.sync(holder);
         }
     }

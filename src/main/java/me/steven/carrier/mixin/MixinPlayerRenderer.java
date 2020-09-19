@@ -21,10 +21,9 @@ public class MixinPlayerRenderer {
             Holder holder = (Holder) abstractClientPlayerEntity;
             Holding holding = holder.getHolding();
             if (holding == null) return;
-            Carriable carriable = CarriableRegistry.INSTANCE.get(holding.getType());
+            Carriable<?> carriable = CarriableRegistry.INSTANCE.get(holding.getType());
             if (carriable != null) {
                 carriable.render(holder, matrices, vertexConsumerProvider, tickDelta, light);
-
             }
         }
     }
