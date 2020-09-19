@@ -1,8 +1,5 @@
 package me.steven.carrier.impl;
 
-import me.steven.carrier.Carrier;
-import me.steven.carrier.api.Carriable;
-import me.steven.carrier.api.CarriableRegistry;
 import me.steven.carrier.api.EntityCarriable;
 import me.steven.carrier.api.Holder;
 import net.fabricmc.api.EnvType;
@@ -17,6 +14,7 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.TurtleEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.NotNull;
 
 public class CarriableTurtle extends EntityCarriable<TurtleEntity> {
@@ -60,7 +58,8 @@ public class CarriableTurtle extends EntityCarriable<TurtleEntity> {
         updateEntity(holder.getHolding());
         matrices.push();
         matrices.scale(0.6f, 0.6f, 0.6f);
-        matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-player.bodyYaw + 90));
+        float yaw = MathHelper.lerpAngleDegrees(tickDelta, player.prevBodyYaw, player.bodyYaw);
+        matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-yaw + 90));
         matrices.translate(-1.0, 1.2, 0.2);
         getEntityRenderer().render(getEntity(), 0, tickDelta, matrices, vcp, light);
         matrices.pop();

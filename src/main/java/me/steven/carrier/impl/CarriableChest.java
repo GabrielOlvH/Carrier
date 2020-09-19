@@ -25,6 +25,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -70,7 +71,8 @@ public class CarriableChest implements Carriable<ChestBlock> {
         BlockState blockState = Blocks.CHEST.getDefaultState();
         matrices.push();
         matrices.scale(0.6f, 0.6f, 0.6f);
-        matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-player.bodyYaw));
+        float yaw = MathHelper.lerpAngleDegrees(tickDelta, player.prevBodyYaw, player.bodyYaw);
+        matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-yaw));
         matrices.translate(-0.5, 0.8, 0.2);
         MinecraftClient.getInstance().getBlockRenderManager().renderBlockAsEntity(blockState, matrices, vcp, light, OverlayTexture.DEFAULT_UV);
         matrices.pop();
