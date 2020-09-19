@@ -34,6 +34,7 @@ public class Carrier implements ModInitializer, EntityComponentInitializer {
         ServerTickEvents.END_WORLD_TICK.register(new ServerWorldTickCallback());
         UseBlockCallback.EVENT.register(HolderInteractCallback.INSTANCE);
         UseEntityCallback.EVENT.register(HolderInteractCallback.INSTANCE);
+        CarriableRegistry.INSTANCE.register(new Identifier("carrier", "cow"), new CarriableCow());
         CarriableRegistry.INSTANCE.register(new Identifier("carrier", "chicken"), new CarriableChicken());
         CarriableRegistry.INSTANCE.register(new Identifier("carrier", "parrot"), new CarriableParrot());
         CarriableRegistry.INSTANCE.register(new Identifier("carrier", "pig"), new CarriablePig());
