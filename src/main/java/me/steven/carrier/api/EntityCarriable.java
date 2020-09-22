@@ -56,7 +56,7 @@ public abstract class EntityCarriable<T extends Entity> implements Carriable<Ent
         ((AccessorEntity) entity).carrier_readCustomDataFromTag(holding.getTag());
         entity.fromTag(holding.getTag());
         BlockPos blockPos = ctx.getBlockPos();
-        entity.setPos(blockPos.getX(), blockPos.getY(), blockPos.getZ());
+        entity.setPos(blockPos.getX() + 0.5F, blockPos.getY(), blockPos.getZ() + 0.5F);
         entity.refreshPositionAfterTeleport(entity.getPos());
         world.spawnEntity(entity);
         holder.setHolding(null);
