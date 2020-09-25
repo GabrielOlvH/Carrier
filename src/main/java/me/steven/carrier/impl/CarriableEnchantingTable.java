@@ -6,12 +6,12 @@ import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.entity.MobSpawnerBlockEntity;
+import net.minecraft.block.entity.EnchantingTableBlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.entity.BlockEntityRenderDispatcher;
-import net.minecraft.client.render.block.entity.MobSpawnerBlockEntityRenderer;
+import net.minecraft.client.render.block.entity.EnchantingTableBlockEntityRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.player.PlayerEntity;
@@ -19,35 +19,35 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
 import org.jetbrains.annotations.NotNull;
 
-public class CarriableSpawner extends CarriableGeneric {
+public class CarriableEnchantingTable extends CarriableGeneric {
 
     @Environment(EnvType.CLIENT)
-    private static MobSpawnerBlockEntity dummySpawner = null;
+    private static EnchantingTableBlockEntity dummyEnchantingTable = null;
     @Environment(EnvType.CLIENT)
-    private static MobSpawnerBlockEntityRenderer dummyRenderer = null;
+    private static EnchantingTableBlockEntityRenderer dummyRenderer = null;
 
-    public CarriableSpawner(Identifier type) {
-        super(type, Blocks.SPAWNER);
+    public CarriableEnchantingTable(Identifier type) {
+        super(type, Blocks.ENCHANTING_TABLE);
     }
 
     @Environment(EnvType.CLIENT)
-    public MobSpawnerBlockEntity getEntity() {
-        if (dummySpawner == null)
-            dummySpawner = new MobSpawnerBlockEntity();
-        return dummySpawner;
+    public EnchantingTableBlockEntity getEntity() {
+        if (dummyEnchantingTable == null)
+            dummyEnchantingTable = new EnchantingTableBlockEntity();
+        return dummyEnchantingTable;
     }
 
     @Environment(EnvType.CLIENT)
-    public MobSpawnerBlockEntityRenderer getEntityRenderer() {
+    public EnchantingTableBlockEntityRenderer getEntityRenderer() {
         if (dummyRenderer == null)
-            dummyRenderer = new MobSpawnerBlockEntityRenderer(BlockEntityRenderDispatcher.INSTANCE);
+            dummyRenderer = new EnchantingTableBlockEntityRenderer(BlockEntityRenderDispatcher.INSTANCE);
         return dummyRenderer;
     }
 
     @Override
     @Environment(EnvType.CLIENT)
     public void render(@NotNull PlayerEntity player, @NotNull Holder holder, @NotNull MatrixStack matrices, @NotNull VertexConsumerProvider vcp, float tickDelta, int light) {
-        BlockState blockState = Blocks.SPAWNER.getDefaultState();
+        BlockState blockState = getParent().getDefaultState();
         getEntity().fromTag(blockState, holder.getHolding().getBlockEntityTag());
         ((AccessorBlockEntity) getEntity()).setWorld(player.world);
         matrices.push();

@@ -1,17 +1,12 @@
 package me.steven.carrier.impl;
 
-import me.steven.carrier.Carrier;
 import me.steven.carrier.api.Carriable;
 import me.steven.carrier.api.CarriablePlacementContext;
 import me.steven.carrier.api.Holder;
 import me.steven.carrier.api.Holding;
-import me.steven.carrier.mixin.AccessorBarrelBlockEntity;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
-import net.minecraft.block.BarrelBlock;
+import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.entity.BarrelBlockEntity;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.OverlayTexture;
@@ -20,36 +15,40 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.Inventories;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.inventory.Inventory;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public class CarriableBarrel implements Carriable<BarrelBlock> {
+public class CarriableGeneric implements Carriable<Block> {
 
-    private static final BlockState RENDER_STATE = Blocks.BARREL.getDefaultState().with(BarrelBlock.FACING, Direction.SOUTH);
+    protected final Identifier type;
+    protected final Block parent;
 
-    @Override
-    public @NotNull BarrelBlock getParent() {
-        return (BarrelBlock) Blocks.BARREL;
+    public CarriableGeneric(Identifier type, Block parent) {
+        this.type = type;
+        this.parent = parent;
     }
 
     @Override
-    public @NotNull ActionResult tryPickup(@NotNull Holder holder, @NotNull World world, @NotNull BlockPos pos, @Nullable Entity entity) {
+    public @NotNull Block getParent() {
+        return parent;
+    }
+
+    @Override
+    public @NotNull ActionResult tryPickup(@NotNull Holder holder, @NotNull World world, @NotNull BlockPos blockPos, @Nullable Entity entity) {
         if (world.isClient) return ActionResult.PASS;
-        BlockEntity blockEntity = world.getBlockEntity(pos);
-        if (!(blockEntity instanceof BarrelBlockEntity)) return ActionResult.PASS;
-        AccessorBarrelBlockEntity barrel = (AccessorBarrelBlockEntity) blockEntity;
-        Holding holding = new Holding(new Identifier(Carrier.MOD_ID, "barrel"), Inventories.toTag(new CompoundTag(), barrel.getInventory()));
+        BlockEntity blockEntity = world.getBlockEntity(blockPos);
+        BlockState blockState = world.getBlockState(blockPos);
+        Holding holding = new Holding(type, blockState, blockEntity);
         holder.setHolding(holding);
-        barrel.getInventory().clear();
-        world.setBlockState(pos, Blocks.AIR.getDefaultState());
+        if (blockEntity instanceof Inventory)
+            ((Inventory) blockEntity).clear();
+        world.setBlockState(blockPos, Blocks.AIR.getDefaultState());
         return ActionResult.SUCCESS;
     }
 
@@ -59,24 +58,25 @@ public class CarriableBarrel implements Carriable<BarrelBlock> {
         Holding holding = holder.getHolding();
         if (holding == null) return ActionResult.PASS;
         BlockPos pos = ctx.getBlockPos();
-        world.setBlockState(pos, Blocks.BARREL.getDefaultState().with(BarrelBlock.FACING, ctx.getPlayerLook().getOpposite()));
+        BlockState state = holding.getBlockState() == null ? parent.getDefaultState() : holding.getBlockState();
+        world.setBlockState(pos, state);
         BlockEntity blockEntity = world.getBlockEntity(pos);
-        if (!(blockEntity instanceof BarrelBlockEntity)) return ActionResult.PASS;
-        AccessorBarrelBlockEntity barrel = (AccessorBarrelBlockEntity) blockEntity;
-        Inventories.fromTag(holding.getTag(), barrel.getInventory());
+        blockEntity.fromTag(state, holding.getBlockEntityTag());
+        blockEntity.setPos(pos);
         holder.setHolding(null);
+        world.updateNeighbors(pos, state.getBlock());
         return ActionResult.SUCCESS;
     }
 
     @Override
-    @Environment(EnvType.CLIENT)
     public void render(@NotNull PlayerEntity player, @NotNull Holder holder, @NotNull MatrixStack matrices, @NotNull VertexConsumerProvider vcp, float tickDelta, int light) {
+        BlockState blockState = parent.getDefaultState();
         matrices.push();
         matrices.scale(0.6f, 0.6f, 0.6f);
         float yaw = MathHelper.lerpAngleDegrees(tickDelta, player.prevBodyYaw, player.bodyYaw);
         matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-yaw));
         matrices.translate(-0.5, 0.8, 0.2);
-        MinecraftClient.getInstance().getBlockRenderManager().renderBlockAsEntity(RENDER_STATE, matrices, vcp, light, OverlayTexture.DEFAULT_UV);
+        MinecraftClient.getInstance().getBlockRenderManager().renderBlockAsEntity(blockState, matrices, vcp, light, OverlayTexture.DEFAULT_UV);
         matrices.pop();
     }
 }

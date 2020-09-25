@@ -12,7 +12,12 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
+import net.fabricmc.fabric.api.event.registry.RegistryEntryAddedCallback;
+import net.minecraft.block.AbstractChestBlock;
+import net.minecraft.block.Block;
+import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.registry.Registry;
 
 public class Carrier implements ModInitializer, EntityComponentInitializer {
 
@@ -33,13 +38,32 @@ public class Carrier implements ModInitializer, EntityComponentInitializer {
         CarriableRegistry.INSTANCE.register(new Identifier("carrier", "sheep"), new CarriableSheep());
         CarriableRegistry.INSTANCE.register(new Identifier("carrier", "turtle"), new CarriableTurtle());
         CarriableRegistry.INSTANCE.register(new Identifier("carrier", "wolf"), new CarriableWolf());
-        CarriableRegistry.INSTANCE.register(new Identifier("carrier", "chest"), new CarriableChest());
-        CarriableRegistry.INSTANCE.register(new Identifier("carrier", "barrel"), new CarriableBarrel());
-        CarriableRegistry.INSTANCE.register(new Identifier("carrier", "spawner"), new CarriableSpawner());
+        CarriableRegistry.INSTANCE.register(new Identifier("carrier", "spawner"), new CarriableSpawner(new Identifier("carrier", "spawner")));
+        CarriableRegistry.INSTANCE.register(new Identifier("carrier", "enchanting_table"), new CarriableEnchantingTable(new Identifier("carrier", "enchanting_table")));
+
+        Registry.BLOCK.forEach((block) -> {
+            Identifier type = new Identifier("carrier", Registry.BLOCK.getId(block).getPath());
+            registerGenericCarriable(block, type);
+        });
+        RegistryEntryAddedCallback.event(Registry.BLOCK).register((rawId, id, block) -> {
+            Identifier type = new Identifier("carrier", id.getPath());
+            registerGenericCarriable(block, type);
+        });
     }
 
     @Override
     public void registerEntityComponentFactories(EntityComponentFactoryRegistry registry) {
         registry.registerForPlayers(HOLDER, Holder::new, RespawnCopyStrategy.ALWAYS_COPY);
+    }
+
+    private static void registerGenericCarriable(Block block, Identifier type) {
+        if (block instanceof BlockEntityProvider) {
+            if (!CarriableRegistry.INSTANCE.contains(type)) {
+                if (block instanceof AbstractChestBlock<?>)
+                    CarriableRegistry.INSTANCE.register(type, new CarriableChest(type, block));
+                else
+                    CarriableRegistry.INSTANCE.register(type, new CarriableGeneric(type, block));
+            }
+        }
     }
 }
