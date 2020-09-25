@@ -6,7 +6,6 @@ import me.steven.carrier.api.Holder;
 import me.steven.carrier.api.Holding;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.OverlayTexture;
@@ -15,7 +14,6 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -45,10 +43,9 @@ public class CarriableGeneric implements Carriable<Block> {
         BlockEntity blockEntity = world.getBlockEntity(blockPos);
         BlockState blockState = world.getBlockState(blockPos);
         Holding holding = new Holding(type, blockState, blockEntity);
+        world.removeBlockEntity(blockPos);
+        world.removeBlock(blockPos, false);
         holder.setHolding(holding);
-        if (blockEntity instanceof Inventory)
-            ((Inventory) blockEntity).clear();
-        world.setBlockState(blockPos, Blocks.AIR.getDefaultState());
         return ActionResult.SUCCESS;
     }
 
@@ -74,8 +71,9 @@ public class CarriableGeneric implements Carriable<Block> {
         matrices.push();
         matrices.scale(0.6f, 0.6f, 0.6f);
         float yaw = MathHelper.lerpAngleDegrees(tickDelta, player.prevBodyYaw, player.bodyYaw);
+        matrices.multiply(Vector3f.NEGATIVE_Y.getDegreesQuaternion(180));
         matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-yaw));
-        matrices.translate(-0.5, 0.8, 0.2);
+        matrices.translate(-0.5, 0.8, -1.3);
         MinecraftClient.getInstance().getBlockRenderManager().renderBlockAsEntity(blockState, matrices, vcp, light, OverlayTexture.DEFAULT_UV);
         matrices.pop();
     }

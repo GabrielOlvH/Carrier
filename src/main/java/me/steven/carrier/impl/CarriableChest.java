@@ -9,9 +9,16 @@ import net.minecraft.block.Blocks;
 import net.minecraft.block.ChestBlock;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.block.enums.ChestType;
+import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.render.OverlayTexture;
+import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.client.util.math.Vector3f;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
+import net.minecraft.util.math.MathHelper;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 
@@ -38,5 +45,17 @@ public class CarriableChest extends CarriableGeneric {
         }
         holder.setHolding(null);
         return ActionResult.SUCCESS;
+    }
+
+    @Override
+    public void render(@NotNull PlayerEntity player, @NotNull Holder holder, @NotNull MatrixStack matrices, @NotNull VertexConsumerProvider vcp, float tickDelta, int light) {
+        BlockState blockState = parent.getDefaultState();
+        matrices.push();
+        matrices.scale(0.6f, 0.6f, 0.6f);
+        float yaw = MathHelper.lerpAngleDegrees(tickDelta, player.prevBodyYaw, player.bodyYaw);
+        matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-yaw));
+        matrices.translate(-0.5, 0.8, 0.2);
+        MinecraftClient.getInstance().getBlockRenderManager().renderBlockAsEntity(blockState, matrices, vcp, light, OverlayTexture.DEFAULT_UV);
+        matrices.pop();
     }
 }
