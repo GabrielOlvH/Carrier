@@ -4,10 +4,7 @@ import me.steven.carrier.api.*;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.minecraft.block.Block;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.MobSpawnerBlockEntity;
 import net.minecraft.entity.Entity;
-import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
@@ -29,7 +26,7 @@ public class HolderInteractCallback implements UseBlockCallback, UseEntityCallba
         Block block = world.getBlockState(pos).getBlock();
         Holder holder = Carrier.HOLDER.get(player);
             Holding holding = holder.getHolding();
-            if (holding == null && player.isSneaking() && CarriableRegistry.INSTANCE.contains(block)) {
+            if (holding == null && player.isSneaking() && CarriableRegistry.INSTANCE.contains(block) && player.getStackInHand(hand).isEmpty()) {
                 Carriable<?> carriable = CarriableRegistry.INSTANCE.get(block);
                 ActionResult actionResult = carriable.tryPickup(holder, world, pos, null);
                 if (actionResult.isAccepted())
@@ -51,7 +48,7 @@ public class HolderInteractCallback implements UseBlockCallback, UseEntityCallba
         BlockPos pos = entity.getBlockPos();
         Holder holder = Carrier.HOLDER.get(player);
             Holding holding = holder.getHolding();
-            if (holding == null && player.isSneaking() && CarriableRegistry.INSTANCE.contains(entity.getType())) {
+            if (holding == null && player.isSneaking() && CarriableRegistry.INSTANCE.contains(entity.getType()) && player.getStackInHand(hand).isEmpty()) {
                 Carriable<?> carriable = CarriableRegistry.INSTANCE.get(entity.getType());
                 ActionResult actionResult = carriable.tryPickup(holder, world, pos, entity);
                 if (actionResult.isAccepted())
