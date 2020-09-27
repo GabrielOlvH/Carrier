@@ -1,14 +1,11 @@
 package me.steven.carrier;
 
-import io.netty.buffer.Unpooled;
 import me.steven.carrier.api.*;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
-import net.fabricmc.fabric.api.network.ClientSidePacketRegistry;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.network.PacketByteBuf;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
@@ -32,11 +29,11 @@ public class HolderInteractCallback implements UseBlockCallback, UseEntityCallba
         Block block = world.getBlockState(pos).getBlock();
         Holder holder = Carrier.HOLDER.get(player);
         Holding holding = holder.getHolding();
-        if (world.isClient && holding == null && player.isSneaking() && CarriableRegistry.INSTANCE.contains(block) && player.getStackInHand(hand).isEmpty() && Carrier.canCarry(Registry.BLOCK.getId(block))) {
-            PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
-            buf.writeBlockPos(hitResult.getBlockPos());
-            ClientSidePacketRegistry.INSTANCE.sendToServer(Carrier.C2S_CARRY_BLOCK_PACKET, buf);
-            return ActionResult.CONSUME;
+        if (holding == null && player.isSneaking() && CarriableRegistry.INSTANCE.contains(block) && player.getStackInHand(hand).isEmpty()) {
+            if (world.isClient && !Carrier.canCarry(Registry.BLOCK.getId(block))) return ActionResult.CONSUME;
+            Carriable<?> carriable = CarriableRegistry.INSTANCE.get(block);
+            if (world.canPlayerModifyAt(player, pos) && carriable != null && Carrier.canCarry(Registry.BLOCK.getId(block)))
+                carriable.tryPickup(holder, world, pos, null);
         }
 
         if (holding != null) {
@@ -56,11 +53,11 @@ public class HolderInteractCallback implements UseBlockCallback, UseEntityCallba
         BlockPos pos = entity.getBlockPos();
         Holder holder = Carrier.HOLDER.get(player);
         Holding holding = holder.getHolding();
-        if (world.isClient && holding == null && player.isSneaking() && CarriableRegistry.INSTANCE.contains(entity.getType()) && player.getStackInHand(hand).isEmpty() && Carrier.canCarry(Registry.ENTITY_TYPE.getId(entity.getType()))) {
-            PacketByteBuf buf = new PacketByteBuf(Unpooled.buffer());
-            buf.writeInt(entity.getEntityId());
-            ClientSidePacketRegistry.INSTANCE.sendToServer(Carrier.C2S_CARRY_ENTITY_PACKET, buf);
-            return ActionResult.CONSUME;
+        if (holding == null && player.isSneaking() && CarriableRegistry.INSTANCE.contains(entity.getType()) && player.getStackInHand(hand).isEmpty() ) {
+            if (world.isClient && !Carrier.canCarry(Registry.ENTITY_TYPE.getId(entity.getType()))) return ActionResult.CONSUME;
+            Carriable<?> carriable = CarriableRegistry.INSTANCE.get(entity.getType());
+            if (world.canPlayerModifyAt(player, pos) && carriable != null && Carrier.canCarry(Registry.ENTITY_TYPE.getId(entity.getType())))
+                carriable.tryPickup(holder, world, pos, entity);
         }
         if (holding == null) return ActionResult.PASS;
         Carriable<?> carriable = CarriableRegistry.INSTANCE.get(holding.getType());

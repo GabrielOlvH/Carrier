@@ -6,7 +6,6 @@ import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistryV3;
 import dev.onyxstudios.cca.api.v3.entity.EntityComponentFactoryRegistry;
 import dev.onyxstudios.cca.api.v3.entity.EntityComponentInitializer;
-import me.steven.carrier.api.Carriable;
 import me.steven.carrier.api.CarriableRegistry;
 import me.steven.carrier.api.Holder;
 import me.steven.carrier.impl.*;
@@ -16,16 +15,12 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.player.UseBlockCallback;
 import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.fabricmc.fabric.api.event.registry.RegistryEntryAddedCallback;
-import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.AbstractChestBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
-import net.minecraft.entity.Entity;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
-import net.minecraft.world.World;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 
@@ -41,9 +36,6 @@ public class Carrier implements ModInitializer, EntityComponentInitializer {
     public static final String MOD_ID = "carrier";
 
     public static Config CONFIG = new Config();
-    
-    public static final Identifier C2S_CARRY_BLOCK_PACKET = new Identifier(MOD_ID, "carry_block_packet");
-    public static final Identifier C2S_CARRY_ENTITY_PACKET = new Identifier(MOD_ID, "carry_entity_packet");
 
     @Override
     public void onInitialize() {
@@ -88,33 +80,6 @@ public class Carrier implements ModInitializer, EntityComponentInitializer {
         RegistryEntryAddedCallback.event(Registry.BLOCK).register((rawId, id, block) -> {
             Identifier type = new Identifier("carrier", id.getPath());
             registerGenericCarriable(block, type);
-        });
-
-        ServerSidePacketRegistry.INSTANCE.register(C2S_CARRY_BLOCK_PACKET, (ctx, buf) -> {
-            BlockPos pos = buf.readBlockPos();
-            Holder holder = HOLDER.get(ctx.getPlayer());
-            ctx.getTaskQueue().execute(() -> {
-                World world = ctx.getPlayer().world;
-                Block block = world.getBlockState(pos).getBlock();
-                Carriable<?> carriable = CarriableRegistry.INSTANCE.get(block);
-                if (world.canPlayerModifyAt(ctx.getPlayer(), pos) && carriable != null && canCarry(Registry.BLOCK.getId(block)))
-                    carriable.tryPickup(holder, world, pos, null);
-            });
-        });
-
-        ServerSidePacketRegistry.INSTANCE.register(C2S_CARRY_ENTITY_PACKET, (ctx, buf) -> {
-            int entityId = buf.readInt();
-            ctx.getTaskQueue().execute(() -> {
-                World world = ctx.getPlayer().world;
-                Entity entity = world.getEntityById(entityId);
-                if (entity != null) {
-                    Holder holder = HOLDER.get(ctx.getPlayer());
-                    BlockPos pos = entity.getBlockPos();
-                    Carriable<?> carriable = CarriableRegistry.INSTANCE.get(entity.getType());
-                    if (world.canPlayerModifyAt(ctx.getPlayer(), pos) && carriable != null && canCarry(Registry.ENTITY_TYPE.getId(entity.getType())))
-                        carriable.tryPickup(holder, world, pos, entity);
-                }
-            });
         });
     }
 
