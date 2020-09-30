@@ -55,7 +55,7 @@ public class CarriableWolf extends EntityCarriable<WolfEntity> {
     @Override
     @Environment(EnvType.CLIENT)
     public void render(@NotNull PlayerEntity player, @NotNull Holder holder, @NotNull MatrixStack matrices, @NotNull VertexConsumerProvider vcp, float tickDelta, int light) {
-        updateEntity(holder.getHolding());
+        //updateEntity(holder.getHolding());
         matrices.push();
         matrices.scale(0.6f, 0.6f, 0.6f);
         float yaw = MathHelper.lerpAngleDegrees(tickDelta, player.prevBodyYaw, player.bodyYaw);
