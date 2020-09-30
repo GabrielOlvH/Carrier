@@ -1,8 +1,6 @@
 package me.steven.carrier;
 
 import me.steven.carrier.api.*;
-import net.fabricmc.fabric.api.event.player.UseBlockCallback;
-import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.minecraft.block.Block;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
@@ -14,14 +12,13 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
-public class HolderInteractCallback implements UseBlockCallback, UseEntityCallback {
+public class HolderInteractCallback {
 
     public static final HolderInteractCallback INSTANCE = new HolderInteractCallback();
 
     private HolderInteractCallback() {
     }
 
-    @Override
     public ActionResult interact(PlayerEntity player, World world, Hand hand, BlockHitResult hitResult) {
         if (hand == Hand.OFF_HAND) return ActionResult.PASS;
         BlockPos pos = hitResult.getBlockPos();
@@ -32,8 +29,10 @@ public class HolderInteractCallback implements UseBlockCallback, UseEntityCallba
         if (holding == null && player.isSneaking() && CarriableRegistry.INSTANCE.contains(block) && player.getStackInHand(hand).isEmpty()) {
             if (world.isClient && !Carrier.canCarry(Registry.BLOCK.getId(block))) return ActionResult.CONSUME;
             Carriable<?> carriable = CarriableRegistry.INSTANCE.get(block);
-            if (world.canPlayerModifyAt(player, pos) && carriable != null && Carrier.canCarry(Registry.BLOCK.getId(block)))
-                carriable.tryPickup(holder, world, pos, null);
+            if (world.canPlayerModifyAt(player, pos) && carriable != null && Carrier.canCarry(Registry.BLOCK.getId(block))) {
+                ActionResult actionResult = carriable.tryPickup(holder, world, pos, null);
+                if (actionResult.isAccepted()) return actionResult;
+            }
         }
 
         if (holding != null) {
@@ -47,7 +46,6 @@ public class HolderInteractCallback implements UseBlockCallback, UseEntityCallba
         return ActionResult.PASS;
     }
 
-    @Override
     public ActionResult interact(PlayerEntity player, World world, Hand hand, Entity entity, EntityHitResult hitResult) {
         if (hand == Hand.OFF_HAND || !world.canPlayerModifyAt(player, entity.getBlockPos())) return ActionResult.PASS;
         BlockPos pos = entity.getBlockPos();
@@ -56,8 +54,10 @@ public class HolderInteractCallback implements UseBlockCallback, UseEntityCallba
         if (holding == null && player.isSneaking() && CarriableRegistry.INSTANCE.contains(entity.getType()) && player.getStackInHand(hand).isEmpty() ) {
             if (world.isClient && !Carrier.canCarry(Registry.ENTITY_TYPE.getId(entity.getType()))) return ActionResult.CONSUME;
             Carriable<?> carriable = CarriableRegistry.INSTANCE.get(entity.getType());
-            if (world.canPlayerModifyAt(player, pos) && carriable != null && Carrier.canCarry(Registry.ENTITY_TYPE.getId(entity.getType())))
-                carriable.tryPickup(holder, world, pos, entity);
+            if (world.canPlayerModifyAt(player, pos) && carriable != null && Carrier.canCarry(Registry.ENTITY_TYPE.getId(entity.getType()))) {
+                ActionResult actionResult = carriable.tryPickup(holder, world, pos, entity);
+                if (actionResult.isAccepted()) return actionResult;
+            }
         }
         if (holding == null) return ActionResult.PASS;
         Carriable<?> carriable = CarriableRegistry.INSTANCE.get(holding.getType());

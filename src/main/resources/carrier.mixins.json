@@ -3,7 +3,9 @@
   "package": "me.steven.carrier.mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
-    "AccessorEntity"
+    "AccessorEntity",
+    "MixinAbstractBlock",
+    "MixinMobEntity"
   ],
   "client": [
     "AccessorBlockEntity",

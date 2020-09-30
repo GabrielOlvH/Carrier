@@ -12,8 +12,6 @@ import me.steven.carrier.impl.*;
 import nerdhub.cardinal.components.api.util.RespawnCopyStrategy;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
-import net.fabricmc.fabric.api.event.player.UseBlockCallback;
-import net.fabricmc.fabric.api.event.player.UseEntityCallback;
 import net.fabricmc.fabric.api.event.registry.RegistryEntryAddedCallback;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.AbstractChestBlock;
@@ -60,8 +58,6 @@ public class Carrier implements ModInitializer, EntityComponentInitializer {
         }
 
         ServerTickEvents.END_WORLD_TICK.register(new ServerWorldTickCallback());
-        UseBlockCallback.EVENT.register(HolderInteractCallback.INSTANCE);
-        UseEntityCallback.EVENT.register(HolderInteractCallback.INSTANCE);
         CarriableRegistry.INSTANCE.register(new Identifier(MOD_ID, "cow"), new CarriableCow());
         CarriableRegistry.INSTANCE.register(new Identifier(MOD_ID, "chicken"), new CarriableChicken());
         CarriableRegistry.INSTANCE.register(new Identifier(MOD_ID, "parrot"), new CarriableParrot());
