@@ -7,7 +7,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.hit.EntityHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
@@ -46,7 +45,7 @@ public class HolderInteractCallback {
         return ActionResult.PASS;
     }
 
-    public ActionResult interact(PlayerEntity player, World world, Hand hand, Entity entity, EntityHitResult hitResult) {
+    public ActionResult interact(PlayerEntity player, World world, Hand hand, Entity entity) {
         if (hand == Hand.OFF_HAND || !world.canPlayerModifyAt(player, entity.getBlockPos())) return ActionResult.PASS;
         BlockPos pos = entity.getBlockPos();
         Holder holder = Carrier.HOLDER.get(player);
