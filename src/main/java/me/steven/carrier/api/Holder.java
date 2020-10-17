@@ -26,6 +26,10 @@ public class Holder implements ComponentV3, AutoSyncedComponent {
         Carrier.HOLDER.sync(owner);
     }
 
+    public PlayerEntity getOwner() {
+        return owner;
+    }
+
     @Override
     public void readFromNbt(CompoundTag tag) {
         if (tag.contains("holding")) {
