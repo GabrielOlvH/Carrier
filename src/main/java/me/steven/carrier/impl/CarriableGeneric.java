@@ -10,6 +10,7 @@ import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.Entity;
@@ -74,7 +75,12 @@ public class CarriableGeneric implements Carriable<Block> {
         matrices.multiply(Vector3f.NEGATIVE_Y.getDegreesQuaternion(180));
         matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-yaw));
         matrices.translate(-0.5, 0.8, -1.3);
-        MinecraftClient.getInstance().getBlockRenderManager().renderBlockAsEntity(blockState, matrices, vcp, light, OverlayTexture.DEFAULT_UV);
+        BlockRenderManager blockRenderManager = MinecraftClient.getInstance().getBlockRenderManager();
+        try {
+            blockRenderManager.renderBlockAsEntity(blockState, matrices, vcp, light, OverlayTexture.DEFAULT_UV);
+        } catch (Exception e) {
+            //yes this is ignored
+        }
         matrices.pop();
     }
 }

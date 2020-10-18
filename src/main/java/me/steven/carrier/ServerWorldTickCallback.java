@@ -3,7 +3,6 @@ package me.steven.carrier;
 import me.steven.carrier.api.Holder;
 import me.steven.carrier.api.Holding;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
-import net.fabricmc.fabric.api.event.lifecycle.v1.ServerWorldEvents;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -16,8 +15,11 @@ public class ServerWorldTickCallback implements ServerTickEvents.EndWorldTick {
             Holder holder = Carrier.HOLDER.get(player);
             Holding holding = holder.getHolding();
             if (holding != null) {
-                player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 20, 2));
-                player.getHungerManager().addExhaustion(0.05f);
+                Config config = Carrier.CONFIG;
+                if (config.getSlownessLevel() > 0)
+                    player.addStatusEffect(new StatusEffectInstance(StatusEffects.SLOWNESS, 20, config.getSlownessLevel() - 1));
+                if (config.getHungerExhaustion() > 0)
+                    player.getHungerManager().addExhaustion(config.getHungerExhaustion());
             }
         }
     }
