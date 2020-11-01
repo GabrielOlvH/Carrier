@@ -36,7 +36,7 @@ public class HolderInteractCallback {
 
         if (holding != null) {
             Carriable<?> carriable = CarriableRegistry.INSTANCE.get(holding.getType());
-            if (!world.isClient && carriable != null && world.getBlockState(pos.offset(hitResult.getSide())).getMaterial().isReplaceable()) {
+            if (!world.isClient && carriable != null && world.getBlockState(pos.offset(hitResult.getSide())).getMaterial().isReplaceable() && player.getStackInHand(hand).isEmpty()) {
                 ActionResult actionResult = carriable.tryPlace(holder, world, new CarriablePlacementContext(holder, carriable, pos.offset(hitResult.getSide()), hitResult.getSide(), player.getHorizontalFacing()));
                 if (actionResult.isAccepted()) return actionResult;
             }
