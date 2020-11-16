@@ -1,0 +1,16 @@
+{
+	"type":"minecraft:crafting_shaped",
+	"pattern":[
+		"L  ",
+		"LL ",
+		"   "
+	],
+	"key":{
+		"L":{
+			"item":"minecraft:leather"
+		}
+	},
+	"result":{
+		"item":"carrier:glove"
+	}
+}
