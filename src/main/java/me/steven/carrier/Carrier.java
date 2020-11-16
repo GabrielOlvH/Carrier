@@ -9,14 +9,18 @@ import dev.onyxstudios.cca.api.v3.entity.EntityComponentInitializer;
 import me.steven.carrier.api.CarriableRegistry;
 import me.steven.carrier.api.Holder;
 import me.steven.carrier.impl.*;
+import me.steven.carrier.items.GloveItem;
 import nerdhub.cardinal.components.api.util.RespawnCopyStrategy;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.registry.RegistryEntryAddedCallback;
+import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.AbstractChestBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemGroup;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import org.apache.commons.io.FileUtils;
@@ -34,6 +38,8 @@ public class Carrier implements ModInitializer, EntityComponentInitializer {
     public static final String MOD_ID = "carrier";
 
     public static Config CONFIG = new Config();
+
+    public static final Item ITEM_GLOVE = new GloveItem(new FabricItemSettings().group(ItemGroup.TOOLS).maxCount(1));
 
     @Override
     public void onInitialize() {
@@ -77,6 +83,9 @@ public class Carrier implements ModInitializer, EntityComponentInitializer {
             Identifier type = new Identifier("carrier", id.getPath());
             registerGenericCarriable(block, type);
         });
+        if (CONFIG.doGlovesExist()) {
+            Registry.register(Registry.ITEM, new Identifier(MOD_ID, "glove"), ITEM_GLOVE);
+        }
     }
 
     @Override
