@@ -6,19 +6,22 @@ import me.steven.carrier.api.CarryingData;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
-import net.minecraft.block.ChestBlock;
 import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.enums.ChestType;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.item.ItemPlacementContext;
+import net.minecraft.item.ItemStack;
 import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3d;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 
@@ -34,9 +37,8 @@ public class CarriableChest extends CarriableGeneric {
         CarryingData carrying = carrier.getCarryingData();
         if (carrying == null) return ActionResult.PASS;
         BlockPos pos = ctx.getBlockPos();
-        BlockState state = carrying.getBlockState() == null ? Blocks.CHEST.getDefaultState().with(ChestBlock.FACING, ctx.getPlayerLook().getOpposite()) : carrying.getBlockState();
-        if (state.getProperties().contains(ChestBlock.CHEST_TYPE) && !world.testBlockState(pos.offset(ChestBlock.getFacing(state)), (neighbor) -> neighbor.isOf(getParent())))
-            state = state.with(ChestBlock.CHEST_TYPE, ChestType.SINGLE);
+
+        BlockState state = Blocks.CHEST.getPlacementState(new ItemPlacementContext(carrier.getOwner(), Hand.MAIN_HAND, ItemStack.EMPTY, new BlockHitResult(new Vec3d(pos.getX(), pos.getY(), pos.getZ()), ctx.getSide(), ctx.getBlockPos(), false)));
         world.setBlockState(pos, state);
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity != null) {
