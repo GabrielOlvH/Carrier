@@ -1,7 +1,7 @@
 package me.steven.carrier.impl;
 
+import me.steven.carrier.api.CarrierComponent;
 import me.steven.carrier.api.EntityCarriable;
-import me.steven.carrier.api.Holder;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.MinecraftClient;
@@ -54,8 +54,8 @@ public class CarriableWolf extends EntityCarriable<WolfEntity> {
 
     @Override
     @Environment(EnvType.CLIENT)
-    public void render(@NotNull PlayerEntity player, @NotNull Holder holder, @NotNull MatrixStack matrices, @NotNull VertexConsumerProvider vcp, float tickDelta, int light) {
-        //updateEntity(holder.getHolding());
+    public void render(@NotNull PlayerEntity player, @NotNull CarrierComponent carrier, @NotNull MatrixStack matrices, @NotNull VertexConsumerProvider vcp, float tickDelta, int light) {
+        //updateEntity(carrier.getHolding());
         matrices.push();
         matrices.scale(0.6f, 0.6f, 0.6f);
         float yaw = MathHelper.lerpAngleDegrees(tickDelta, player.prevBodyYaw, player.bodyYaw);

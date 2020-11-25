@@ -3,8 +3,8 @@ package me.steven.carrier.mixin;
 import me.steven.carrier.Carrier;
 import me.steven.carrier.api.Carriable;
 import me.steven.carrier.api.CarriableRegistry;
-import me.steven.carrier.api.Holder;
-import me.steven.carrier.api.Holding;
+import me.steven.carrier.api.CarrierComponent;
+import me.steven.carrier.api.CarryingData;
 import net.minecraft.client.network.AbstractClientPlayerEntity;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.PlayerEntityRenderer;
@@ -18,12 +18,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public class MixinPlayerRenderer {
     @Inject(method = "render", at = @At("TAIL"))
     private void carrier_renderCarrying(AbstractClientPlayerEntity player, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumerProvider, int light, CallbackInfo ci) {
-        Holder holder = Carrier.HOLDER.get(player);
-        Holding holding = holder.getHolding();
-        if (holding == null) return;
-        Carriable<?> carriable = CarriableRegistry.INSTANCE.get(holding.getType());
+        CarrierComponent carrier = Carrier.HOLDER.get(player);
+        CarryingData carrying = carrier.getHolding();
+        if (carrying == null) return;
+        Carriable<?> carriable = CarriableRegistry.INSTANCE.get(carrying.getType());
         if (carriable != null) {
-            carriable.render(player, holder, matrices, vertexConsumerProvider, tickDelta, light);
+            carriable.render(player, carrier, matrices, vertexConsumerProvider, tickDelta, light);
         }
     }
 }

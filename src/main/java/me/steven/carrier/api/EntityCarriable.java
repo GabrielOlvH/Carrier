@@ -36,36 +36,36 @@ public abstract class EntityCarriable<T extends Entity> implements Carriable<Ent
     public abstract EntityRenderer<T> getEntityRenderer();
 
     @Override
-    public @NotNull ActionResult tryPickup(@NotNull Holder holder, @NotNull World world, @NotNull BlockPos blockPos, @Nullable Entity entity) {
+    public @NotNull ActionResult tryPickup(@NotNull CarrierComponent carrier, @NotNull World world, @NotNull BlockPos blockPos, @Nullable Entity entity) {
         if (world.isClient || entity == null) return ActionResult.PASS;
         CompoundTag tag = new CompoundTag();
         entity.toTag(tag);
         ((AccessorEntity) entity).carrier_writeCustomDataToTag(tag);
-        Holding holding = new Holding(type, tag);
-        holder.setHolding(holding);
+        CarryingData carrying = new CarryingData(type, tag);
+        carrier.setHolding(carrying);
         entity.remove();
         return ActionResult.SUCCESS;
     }
 
     @Override
-    public @NotNull ActionResult tryPlace(@NotNull Holder holder, @NotNull World world, @NotNull CarriablePlacementContext ctx) {
+    public @NotNull ActionResult tryPlace(@NotNull CarrierComponent carrier, @NotNull World world, @NotNull CarriablePlacementContext ctx) {
         if (world.isClient) return ActionResult.PASS;
-        Holding holding = holder.getHolding();
+        CarryingData carrying = carrier.getHolding();
         Entity entity = entityType.create(world);
-        if (entity == null || holding == null) return ActionResult.PASS;
-        ((AccessorEntity) entity).carrier_readCustomDataFromTag(holding.getTag());
-        entity.fromTag(holding.getTag());
+        if (entity == null || carrying == null) return ActionResult.PASS;
+        ((AccessorEntity) entity).carrier_readCustomDataFromTag(carrying.getTag());
+        entity.fromTag(carrying.getTag());
         BlockPos blockPos = ctx.getBlockPos();
         entity.setPos(blockPos.getX() + 0.5F, blockPos.getY(), blockPos.getZ() + 0.5F);
         entity.refreshPositionAfterTeleport(entity.getPos());
         world.spawnEntity(entity);
-        holder.setHolding(null);
+        carrier.setHolding(null);
         return ActionResult.SUCCESS;
     }
 
-    protected void updateEntity(Holding holding) {
-        if (!holding.getTag().getUuid("UUID").equals(getEntity().getUuid())) {
-            getEntity().fromTag(holding.getTag());
+    protected void updateEntity(CarryingData carrying) {
+        if (!carrying.getTag().getUuid("UUID").equals(getEntity().getUuid())) {
+            getEntity().fromTag(carrying.getTag());
         }
         if (getEntity() instanceof LivingEntity) {
             LivingEntity entity = (LivingEntity) getEntity();

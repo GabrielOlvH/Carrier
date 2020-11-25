@@ -12,19 +12,19 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
-public class Holding {
+public class CarryingData {
     private final Identifier type;
     private final BlockState blockState;
     private final CompoundTag tag;
 
-    public Holding(Identifier type, CompoundTag tag) {
+    public CarryingData(Identifier type, CompoundTag tag) {
         this.type = type;
         this.tag = tag;
         Optional<Pair<BlockState, Tag>> blockState = BlockState.CODEC.decode(NbtOps.INSTANCE, tag.getCompound("blockState")).get().left();
         this.blockState = blockState.map(Pair::getFirst).orElse(null);
     }
 
-    public Holding(Identifier type, BlockState state, @Nullable BlockEntity entity) {
+    public CarryingData(Identifier type, BlockState state, @Nullable BlockEntity entity) {
         this.type = type;
         this.tag = new CompoundTag();
         this.blockState = state;

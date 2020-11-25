@@ -2,8 +2,8 @@ package me.steven.carrier.impl;
 
 import me.steven.carrier.api.Carriable;
 import me.steven.carrier.api.CarriablePlacementContext;
-import me.steven.carrier.api.Holder;
-import me.steven.carrier.api.Holding;
+import me.steven.carrier.api.CarrierComponent;
+import me.steven.carrier.api.CarryingData;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -39,37 +39,37 @@ public class CarriableGeneric implements Carriable<Block> {
     }
 
     @Override
-    public @NotNull ActionResult tryPickup(@NotNull Holder holder, @NotNull World world, @NotNull BlockPos blockPos, @Nullable Entity entity) {
+    public @NotNull ActionResult tryPickup(@NotNull CarrierComponent carrier, @NotNull World world, @NotNull BlockPos blockPos, @Nullable Entity entity) {
         if (world.isClient) return ActionResult.PASS;
         BlockEntity blockEntity = world.getBlockEntity(blockPos);
         BlockState blockState = world.getBlockState(blockPos);
-        Holding holding = new Holding(type, blockState, blockEntity);
+        CarryingData carrying = new CarryingData(type, blockState, blockEntity);
         world.removeBlockEntity(blockPos);
         world.removeBlock(blockPos, false);
-        holder.setHolding(holding);
+        carrier.setHolding(carrying);
         return ActionResult.SUCCESS;
     }
 
     @Override
-    public @NotNull ActionResult tryPlace(@NotNull Holder holder, @NotNull World world, @NotNull CarriablePlacementContext ctx) {
+    public @NotNull ActionResult tryPlace(@NotNull CarrierComponent carrier, @NotNull World world, @NotNull CarriablePlacementContext ctx) {
         if (world.isClient) return ActionResult.PASS;
-        Holding holding = holder.getHolding();
-        if (holding == null) return ActionResult.PASS;
+        CarryingData carrying = carrier.getHolding();
+        if (carrying == null) return ActionResult.PASS;
         BlockPos pos = ctx.getBlockPos();
-        BlockState state = holding.getBlockState() == null ? parent.getDefaultState() : holding.getBlockState();
+        BlockState state = carrying.getBlockState() == null ? parent.getDefaultState() : carrying.getBlockState();
         world.setBlockState(pos, state);
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity != null) {
-            blockEntity.fromTag(state, holding.getBlockEntityTag());
+            blockEntity.fromTag(state, carrying.getBlockEntityTag());
             blockEntity.setPos(pos);
         }
-        holder.setHolding(null);
+        carrier.setHolding(null);
         world.updateNeighbors(pos, state.getBlock());
         return ActionResult.SUCCESS;
     }
 
     @Override
-    public void render(@NotNull PlayerEntity player, @NotNull Holder holder, @NotNull MatrixStack matrices, @NotNull VertexConsumerProvider vcp, float tickDelta, int light) {
+    public void render(@NotNull PlayerEntity player, @NotNull CarrierComponent carrier, @NotNull MatrixStack matrices, @NotNull VertexConsumerProvider vcp, float tickDelta, int light) {
         BlockState blockState = parent.getDefaultState();
         matrices.push();
         matrices.scale(0.6f, 0.6f, 0.6f);

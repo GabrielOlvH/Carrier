@@ -1,6 +1,6 @@
 package me.steven.carrier.impl;
 
-import me.steven.carrier.api.Holder;
+import me.steven.carrier.api.CarrierComponent;
 import me.steven.carrier.mixin.AccessorBlockEntity;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
@@ -46,9 +46,9 @@ public class CarriableEnchantingTable extends CarriableGeneric {
 
     @Override
     @Environment(EnvType.CLIENT)
-    public void render(@NotNull PlayerEntity player, @NotNull Holder holder, @NotNull MatrixStack matrices, @NotNull VertexConsumerProvider vcp, float tickDelta, int light) {
+    public void render(@NotNull PlayerEntity player, @NotNull CarrierComponent carrier, @NotNull MatrixStack matrices, @NotNull VertexConsumerProvider vcp, float tickDelta, int light) {
         BlockState blockState = getParent().getDefaultState();
-        getEntity().fromTag(blockState, holder.getHolding().getBlockEntityTag());
+        getEntity().fromTag(blockState, carrier.getHolding().getBlockEntityTag());
         ((AccessorBlockEntity) getEntity()).setWorld(player.world);
         matrices.push();
         matrices.scale(0.6f, 0.6f, 0.6f);

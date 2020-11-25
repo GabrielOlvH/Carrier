@@ -7,7 +7,7 @@ import dev.onyxstudios.cca.api.v3.component.ComponentRegistryV3;
 import dev.onyxstudios.cca.api.v3.entity.EntityComponentFactoryRegistry;
 import dev.onyxstudios.cca.api.v3.entity.EntityComponentInitializer;
 import me.steven.carrier.api.CarriableRegistry;
-import me.steven.carrier.api.Holder;
+import me.steven.carrier.api.CarrierComponent;
 import me.steven.carrier.impl.*;
 import me.steven.carrier.items.GloveItem;
 import nerdhub.cardinal.components.api.util.RespawnCopyStrategy;
@@ -33,7 +33,7 @@ import java.util.regex.Pattern;
 
 public class Carrier implements ModInitializer, EntityComponentInitializer {
 
-    public static final ComponentKey<Holder> HOLDER = ComponentRegistryV3.INSTANCE.getOrCreate(new Identifier("carrier", "holder"), Holder.class);
+    public static final ComponentKey<CarrierComponent> HOLDER = ComponentRegistryV3.INSTANCE.getOrCreate(new Identifier("carrier", "carrier"), CarrierComponent.class);
 
     public static final String MOD_ID = "carrier";
 
@@ -90,7 +90,7 @@ public class Carrier implements ModInitializer, EntityComponentInitializer {
 
     @Override
     public void registerEntityComponentFactories(EntityComponentFactoryRegistry registry) {
-        registry.registerForPlayers(HOLDER, Holder::new, RespawnCopyStrategy.ALWAYS_COPY);
+        registry.registerForPlayers(HOLDER, CarrierComponent::new, RespawnCopyStrategy.ALWAYS_COPY);
     }
 
     public static boolean canCarry(Identifier id) {

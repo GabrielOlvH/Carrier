@@ -1,8 +1,8 @@
 package me.steven.carrier.impl;
 
 import me.steven.carrier.api.CarriablePlacementContext;
-import me.steven.carrier.api.Holder;
-import me.steven.carrier.api.Holding;
+import me.steven.carrier.api.CarrierComponent;
+import me.steven.carrier.api.CarryingData;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.Blocks;
@@ -29,26 +29,26 @@ public class CarriableChest extends CarriableGeneric {
     }
 
     @Override
-    public @NotNull ActionResult tryPlace(@NotNull Holder holder, @NotNull World world, @NotNull CarriablePlacementContext ctx) {
+    public @NotNull ActionResult tryPlace(@NotNull CarrierComponent carrier, @NotNull World world, @NotNull CarriablePlacementContext ctx) {
         if (world.isClient) return ActionResult.PASS;
-        Holding holding = holder.getHolding();
-        if (holding == null) return ActionResult.PASS;
+        CarryingData carrying = carrier.getHolding();
+        if (carrying == null) return ActionResult.PASS;
         BlockPos pos = ctx.getBlockPos();
-        BlockState state = holding.getBlockState() == null ? Blocks.CHEST.getDefaultState().with(ChestBlock.FACING, ctx.getPlayerLook().getOpposite()) : holding.getBlockState();
+        BlockState state = carrying.getBlockState() == null ? Blocks.CHEST.getDefaultState().with(ChestBlock.FACING, ctx.getPlayerLook().getOpposite()) : carrying.getBlockState();
         if (state.getProperties().contains(ChestBlock.CHEST_TYPE) && !world.testBlockState(pos.offset(ChestBlock.getFacing(state)), (neighbor) -> neighbor.isOf(getParent())))
             state = state.with(ChestBlock.CHEST_TYPE, ChestType.SINGLE);
         world.setBlockState(pos, state);
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity != null) {
-            blockEntity.fromTag(state, holding.getBlockEntityTag());
+            blockEntity.fromTag(state, carrying.getBlockEntityTag());
             blockEntity.setPos(pos);
         }
-        holder.setHolding(null);
+        carrier.setHolding(null);
         return ActionResult.SUCCESS;
     }
 
     @Override
-    public void render(@NotNull PlayerEntity player, @NotNull Holder holder, @NotNull MatrixStack matrices, @NotNull VertexConsumerProvider vcp, float tickDelta, int light) {
+    public void render(@NotNull PlayerEntity player, @NotNull CarrierComponent carrier, @NotNull MatrixStack matrices, @NotNull VertexConsumerProvider vcp, float tickDelta, int light) {
         BlockState blockState = parent.getDefaultState();
         matrices.push();
         matrices.scale(0.6f, 0.6f, 0.6f);

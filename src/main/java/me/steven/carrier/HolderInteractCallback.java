@@ -8,7 +8,6 @@ import net.minecraft.item.ItemUsageContext;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.hit.BlockHitResult;
-import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.registry.Registry;
@@ -24,21 +23,21 @@ public class HolderInteractCallback {
         if (hand == Hand.OFF_HAND) return ActionResult.PASS;
         if (!world.canPlayerModifyAt(player, pos)) return ActionResult.PASS;
         Block block = world.getBlockState(pos).getBlock();
-        Holder holder = Carrier.HOLDER.get(player);
-        Holding holding = holder.getHolding();
-        if (canPickup && holding == null  && CarriableRegistry.INSTANCE.contains(block)) {
+        CarrierComponent carrier = Carrier.HOLDER.get(player);
+        CarryingData carrying = carrier.getHolding();
+        if (canPickup && carrying == null  && CarriableRegistry.INSTANCE.contains(block)) {
             if (world.isClient && !Carrier.canCarry(Registry.BLOCK.getId(block))) return ActionResult.CONSUME;
             Carriable<?> carriable = CarriableRegistry.INSTANCE.get(block);
             if (world.canPlayerModifyAt(player, pos) && carriable != null && Carrier.canCarry(Registry.BLOCK.getId(block))) {
-                ActionResult actionResult = carriable.tryPickup(holder, world, pos, null);
+                ActionResult actionResult = carriable.tryPickup(carrier, world, pos, null);
                 if (actionResult.isAccepted()) return actionResult;
             }
         }
 
-        if (holding != null) {
-            Carriable<?> carriable = CarriableRegistry.INSTANCE.get(holding.getType());
+        if (carrying != null) {
+            Carriable<?> carriable = CarriableRegistry.INSTANCE.get(carrying.getType());
             if (!world.isClient && carriable != null && world.getBlockState(pos.offset(hitDirection)).getMaterial().isReplaceable()) {
-                ActionResult actionResult = carriable.tryPlace(holder, world, new CarriablePlacementContext(holder, carriable, pos.offset(hitDirection), hitDirection, player.getHorizontalFacing()));
+                ActionResult actionResult = carriable.tryPlace(carrier, world, new CarriablePlacementContext(carrier, carriable, pos.offset(hitDirection), hitDirection, player.getHorizontalFacing()));
                 if (actionResult.isAccepted()) return actionResult;
             }
         }
@@ -49,20 +48,20 @@ public class HolderInteractCallback {
     public ActionResult interact(PlayerEntity player, World world, Hand hand, Entity entity, boolean canPickup) {
         if (hand == Hand.OFF_HAND || !world.canPlayerModifyAt(player, entity.getBlockPos())) return ActionResult.PASS;
         BlockPos pos = entity.getBlockPos();
-        Holder holder = Carrier.HOLDER.get(player);
-        Holding holding = holder.getHolding();
-        if (canPickup && holding == null  && CarriableRegistry.INSTANCE.contains(entity.getType())) {
+        CarrierComponent carrier = Carrier.HOLDER.get(player);
+        CarryingData carrying = carrier.getHolding();
+        if (canPickup && carrying == null  && CarriableRegistry.INSTANCE.contains(entity.getType())) {
             if (world.isClient && !Carrier.canCarry(Registry.ENTITY_TYPE.getId(entity.getType()))) return ActionResult.CONSUME;
             Carriable<?> carriable = CarriableRegistry.INSTANCE.get(entity.getType());
             if (world.canPlayerModifyAt(player, pos) && carriable != null && Carrier.canCarry(Registry.ENTITY_TYPE.getId(entity.getType()))) {
-                ActionResult actionResult = carriable.tryPickup(holder, world, pos, entity);
+                ActionResult actionResult = carriable.tryPickup(carrier, world, pos, entity);
                 if (actionResult.isAccepted()) return actionResult;
             }
         }
-        if (holding == null) return ActionResult.PASS;
-        Carriable<?> carriable = CarriableRegistry.INSTANCE.get(holding.getType());
+        if (carrying == null) return ActionResult.PASS;
+        Carriable<?> carriable = CarriableRegistry.INSTANCE.get(carrying.getType());
         if (!world.isClient && carriable != null) {
-            ActionResult actionResult = carriable.tryPlace(holder, world, new CarriablePlacementContext(holder, carriable, pos, player.getHorizontalFacing(), player.getHorizontalFacing()));
+            ActionResult actionResult = carriable.tryPlace(carrier, world, new CarriablePlacementContext(carrier, carriable, pos, player.getHorizontalFacing(), player.getHorizontalFacing()));
             if (actionResult.isAccepted()) return actionResult;
         }
         return ActionResult.PASS;
