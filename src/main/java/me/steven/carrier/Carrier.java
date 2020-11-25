@@ -33,7 +33,7 @@ import java.util.regex.Pattern;
 
 public class Carrier implements ModInitializer, EntityComponentInitializer {
 
-    public static final ComponentKey<CarrierComponent> HOLDER = ComponentRegistryV3.INSTANCE.getOrCreate(new Identifier("carrier", "carrier"), CarrierComponent.class);
+    public static final ComponentKey<CarrierComponent> HOLDER = ComponentRegistryV3.INSTANCE.getOrCreate(new Identifier("carrier", "holder"), CarrierComponent.class);
 
     public static final String MOD_ID = "carrier";
 
