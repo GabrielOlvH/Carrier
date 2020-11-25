@@ -8,6 +8,7 @@ import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.nbt.Tag;
 import net.minecraft.util.Identifier;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
 
@@ -23,21 +24,25 @@ public class Holding {
         this.blockState = blockState.map(Pair::getFirst).orElse(null);
     }
 
-    public Holding(Identifier type, BlockState state, BlockEntity entity) {
+    public Holding(Identifier type, BlockState state, @Nullable BlockEntity entity) {
         this.type = type;
         this.tag = new CompoundTag();
         this.blockState = state;
         DataResult<Tag> result = BlockState.CODEC.encodeStart(NbtOps.INSTANCE, state);
         result.result().ifPresent((t) -> this.tag.put("blockState", t));
-        this.tag.put("blockEntity", entity.toTag(new CompoundTag()));
+        if (entity != null)
+            this.tag.put("blockEntity", entity.toTag(new CompoundTag()));
     }
 
     public CompoundTag getTag() {
         return tag;
     }
 
+    @Nullable
     public CompoundTag getBlockEntityTag() {
-        return tag.getCompound("blockEntity");
+        if (tag.contains("blockEntity"))
+            return tag.getCompound("blockEntity");
+        else return null;
     }
 
     public Identifier getType() {

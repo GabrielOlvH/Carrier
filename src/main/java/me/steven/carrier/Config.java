@@ -3,6 +3,7 @@ package me.steven.carrier;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings({"FieldMayBeFinal", "FieldCanBeLocal"})
 public class Config {
     private boolean enableGloves = false;
     private int slownessLevel = 2;
@@ -23,7 +24,9 @@ public class Config {
     public float getHungerExhaustion() {
         return hungerExhaustion;
     }
+
     public boolean doGlovesExist() { return enableGloves; }
+
     public int getSlownessLevel() {
         return slownessLevel;
     }

@@ -37,13 +37,12 @@ public abstract class EntityCarriable<T extends Entity> implements Carriable<Ent
 
     @Override
     public @NotNull ActionResult tryPickup(@NotNull Holder holder, @NotNull World world, @NotNull BlockPos blockPos, @Nullable Entity entity) {
-        if (world.isClient) return ActionResult.PASS;
+        if (world.isClient || entity == null) return ActionResult.PASS;
         CompoundTag tag = new CompoundTag();
         entity.toTag(tag);
         ((AccessorEntity) entity).carrier_writeCustomDataToTag(tag);
         Holding holding = new Holding(type, tag);
         holder.setHolding(holding);
-        Carriable<?> carriable = CarriableRegistry.INSTANCE.get(holding.getType());
         entity.remove();
         return ActionResult.SUCCESS;
     }
@@ -53,6 +52,7 @@ public abstract class EntityCarriable<T extends Entity> implements Carriable<Ent
         if (world.isClient) return ActionResult.PASS;
         Holding holding = holder.getHolding();
         Entity entity = entityType.create(world);
+        if (entity == null || holding == null) return ActionResult.PASS;
         ((AccessorEntity) entity).carrier_readCustomDataFromTag(holding.getTag());
         entity.fromTag(holding.getTag());
         BlockPos blockPos = ctx.getBlockPos();
@@ -60,7 +60,6 @@ public abstract class EntityCarriable<T extends Entity> implements Carriable<Ent
         entity.refreshPositionAfterTeleport(entity.getPos());
         world.spawnEntity(entity);
         holder.setHolding(null);
-        Carriable carriable = CarriableRegistry.INSTANCE.get(holding.getType());
         return ActionResult.SUCCESS;
     }
 

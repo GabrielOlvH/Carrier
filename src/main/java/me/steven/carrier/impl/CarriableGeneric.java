@@ -59,8 +59,10 @@ public class CarriableGeneric implements Carriable<Block> {
         BlockState state = holding.getBlockState() == null ? parent.getDefaultState() : holding.getBlockState();
         world.setBlockState(pos, state);
         BlockEntity blockEntity = world.getBlockEntity(pos);
-        blockEntity.fromTag(state, holding.getBlockEntityTag());
-        blockEntity.setPos(pos);
+        if (blockEntity != null) {
+            blockEntity.fromTag(state, holding.getBlockEntityTag());
+            blockEntity.setPos(pos);
+        }
         holder.setHolding(null);
         world.updateNeighbors(pos, state.getBlock());
         return ActionResult.SUCCESS;
