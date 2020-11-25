@@ -8,6 +8,7 @@ import dev.onyxstudios.cca.api.v3.entity.EntityComponentFactoryRegistry;
 import dev.onyxstudios.cca.api.v3.entity.EntityComponentInitializer;
 import me.steven.carrier.api.CarriableRegistry;
 import me.steven.carrier.api.CarrierComponent;
+import me.steven.carrier.api.CarrierPlayerExtension;
 import me.steven.carrier.impl.*;
 import me.steven.carrier.items.GloveItem;
 import nerdhub.cardinal.components.api.util.RespawnCopyStrategy;
@@ -15,6 +16,7 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.registry.RegistryEntryAddedCallback;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
+import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.AbstractChestBlock;
 import net.minecraft.block.Block;
@@ -40,6 +42,8 @@ public class Carrier implements ModInitializer, EntityComponentInitializer {
     public static Config CONFIG = new Config();
 
     public static final Item ITEM_GLOVE = new GloveItem(new FabricItemSettings().group(ItemGroup.TOOLS).maxCount(1));
+
+    public static final Identifier SET_CAN_CARRY_PACKET = new Identifier(MOD_ID, "can_carry_packet");
 
     @Override
     public void onInitialize() {
@@ -86,6 +90,11 @@ public class Carrier implements ModInitializer, EntityComponentInitializer {
         if (CONFIG.doGlovesExist()) {
             Registry.register(Registry.ITEM, new Identifier(MOD_ID, "glove"), ITEM_GLOVE);
         }
+        ServerSidePacketRegistry.INSTANCE.register(SET_CAN_CARRY_PACKET, (ctx, buf) -> {
+            boolean canCarry = buf.readBoolean();
+            ctx.getTaskQueue().execute(() ->
+                    ((CarrierPlayerExtension) ctx.getPlayer()).setCanCarry(canCarry));
+        });
     }
 
     @Override

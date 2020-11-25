@@ -67,10 +67,13 @@ public class HolderInteractCallback {
         return ActionResult.PASS;
     }
     public ActionResult interact(PlayerEntity player, World world, Hand hand, BlockHitResult hitResult) {
-        return interact(player,world,hand,hitResult.getBlockPos(),hitResult.getSide(), !Carrier.CONFIG.doGlovesExist() && player.isSneaking() && player.getStackInHand(hand).isEmpty());
+        return interact(player,world,hand,hitResult.getBlockPos(),hitResult.getSide(), !Carrier.CONFIG.doGlovesExist()
+                && ((CarrierPlayerExtension) player).canCarry()  && player.getStackInHand(hand).isEmpty());
     }
     public ActionResult interact(PlayerEntity player, World world, Hand hand, Entity entity) {
-        return interact(player, player.world, hand, entity, !Carrier.CONFIG.doGlovesExist() && player.isSneaking() && player.getStackInHand(hand).isEmpty());
+        return interact(player, world, hand, entity, !Carrier.CONFIG.doGlovesExist()
+                && ((CarrierPlayerExtension) player).canCarry()
+                && player.getStackInHand(hand).isEmpty());
     }
     public ActionResult interact(ItemUsageContext context) {
         return interact(context.getPlayer(),context.getWorld(),context.getHand(),context.getBlockPos(),context.getSide(), true);

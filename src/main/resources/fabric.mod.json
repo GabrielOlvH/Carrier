@@ -18,7 +18,10 @@
   "environment": "*",
   "entrypoints": {
     "main": [
-        "me.steven.carrier.Carrier"
+      "me.steven.carrier.Carrier"
+    ],
+    "client": [
+      "me.steven.carrier.CarrierClient"
     ],
     "cardinal-components-entity": [
       "me.steven.carrier.Carrier"

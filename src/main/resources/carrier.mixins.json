@@ -6,10 +6,12 @@
     "AccessorEntity",
     "MixinAbstractBlock",
     "MixinMobEntity",
-    "MixinRecipeManager"
+    "MixinRecipeManager",
+    "MixinServerPlayerEntity"
   ],
   "client": [
     "AccessorBlockEntity",
+    "MixinClientPlayerEntity",
     "MixinGameRenderer",
     "MixinMinecraftClient",
     "MixinPlayerInventory",
