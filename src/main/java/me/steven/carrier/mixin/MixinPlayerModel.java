@@ -23,7 +23,7 @@ public class MixinPlayerModel extends BipedEntityModel<PlayerEntity> {
         if (livingEntity instanceof PlayerEntity){
             PlayerEntity player = (PlayerEntity) livingEntity;
             CarrierComponent carrier = Carrier.HOLDER.get(player);
-            if (carrier.getHolding() == null) return;
+            if (carrier.getCarryingData() == null) return;
             float pitch = 0.4f;
             if (player.isSneaking()) pitch = 0.8f;
             rightArm.pitch = -pitch;

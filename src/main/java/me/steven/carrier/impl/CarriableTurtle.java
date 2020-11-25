@@ -55,7 +55,7 @@ public class CarriableTurtle extends EntityCarriable<TurtleEntity> {
     @Override
     @Environment(EnvType.CLIENT)
     public void render(@NotNull PlayerEntity player, @NotNull CarrierComponent carrier, @NotNull MatrixStack matrices, @NotNull VertexConsumerProvider vcp, float tickDelta, int light) {
-        updateEntity(carrier.getHolding());
+        updateEntity(carrier.getCarryingData());
         matrices.push();
         matrices.scale(0.6f, 0.6f, 0.6f);
         float yaw = MathHelper.lerpAngleDegrees(tickDelta, player.prevBodyYaw, player.bodyYaw);

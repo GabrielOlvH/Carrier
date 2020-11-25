@@ -24,7 +24,7 @@ public class HolderInteractCallback {
         if (!world.canPlayerModifyAt(player, pos)) return ActionResult.PASS;
         Block block = world.getBlockState(pos).getBlock();
         CarrierComponent carrier = Carrier.HOLDER.get(player);
-        CarryingData carrying = carrier.getHolding();
+        CarryingData carrying = carrier.getCarryingData();
         if (canPickup && carrying == null  && CarriableRegistry.INSTANCE.contains(block)) {
             if (world.isClient && !Carrier.canCarry(Registry.BLOCK.getId(block))) return ActionResult.CONSUME;
             Carriable<?> carriable = CarriableRegistry.INSTANCE.get(block);
@@ -49,7 +49,7 @@ public class HolderInteractCallback {
         if (hand == Hand.OFF_HAND || !world.canPlayerModifyAt(player, entity.getBlockPos())) return ActionResult.PASS;
         BlockPos pos = entity.getBlockPos();
         CarrierComponent carrier = Carrier.HOLDER.get(player);
-        CarryingData carrying = carrier.getHolding();
+        CarryingData carrying = carrier.getCarryingData();
         if (canPickup && carrying == null  && CarriableRegistry.INSTANCE.contains(entity.getType())) {
             if (world.isClient && !Carrier.canCarry(Registry.ENTITY_TYPE.getId(entity.getType()))) return ActionResult.CONSUME;
             Carriable<?> carriable = CarriableRegistry.INSTANCE.get(entity.getType());

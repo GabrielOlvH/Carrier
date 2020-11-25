@@ -19,6 +19,6 @@ public class MixinPlayerInventory {
     @Inject(method = "scrollInHotbar", at = @At("HEAD"), cancellable = true)
     private void carrier_cancelSelectedSlotChange(double scrollAmount, CallbackInfo ci) {
         CarrierComponent carrier = Carrier.HOLDER.get(player);
-        if (carrier.getHolding() != null) ci.cancel();
+        if (carrier.getCarryingData() != null) ci.cancel();
     }
 }

@@ -48,7 +48,7 @@ public class CarriableSpawner extends CarriableGeneric {
     @Environment(EnvType.CLIENT)
     public void render(@NotNull PlayerEntity player, @NotNull CarrierComponent carrier, @NotNull MatrixStack matrices, @NotNull VertexConsumerProvider vcp, float tickDelta, int light) {
         BlockState blockState = Blocks.SPAWNER.getDefaultState();
-        getEntity().fromTag(blockState, carrier.getHolding().getBlockEntityTag());
+        getEntity().fromTag(blockState, carrier.getCarryingData().getBlockEntityTag());
         ((AccessorBlockEntity) getEntity()).setWorld(player.world);
         matrices.push();
         matrices.scale(0.6f, 0.6f, 0.6f);

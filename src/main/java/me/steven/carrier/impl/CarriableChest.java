@@ -31,7 +31,7 @@ public class CarriableChest extends CarriableGeneric {
     @Override
     public @NotNull ActionResult tryPlace(@NotNull CarrierComponent carrier, @NotNull World world, @NotNull CarriablePlacementContext ctx) {
         if (world.isClient) return ActionResult.PASS;
-        CarryingData carrying = carrier.getHolding();
+        CarryingData carrying = carrier.getCarryingData();
         if (carrying == null) return ActionResult.PASS;
         BlockPos pos = ctx.getBlockPos();
         BlockState state = carrying.getBlockState() == null ? Blocks.CHEST.getDefaultState().with(ChestBlock.FACING, ctx.getPlayerLook().getOpposite()) : carrying.getBlockState();
@@ -43,7 +43,7 @@ public class CarriableChest extends CarriableGeneric {
             blockEntity.fromTag(state, carrying.getBlockEntityTag());
             blockEntity.setPos(pos);
         }
-        carrier.setHolding(null);
+        carrier.setCarryingData(null);
         return ActionResult.SUCCESS;
     }
 

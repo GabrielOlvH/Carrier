@@ -13,7 +13,7 @@ public class ServerWorldTickCallback implements ServerTickEvents.EndWorldTick {
     public void onEndTick(ServerWorld serverWorld) {
         for (ServerPlayerEntity player : serverWorld.getPlayers()) {
             CarrierComponent carrier = Carrier.HOLDER.get(player);
-            CarryingData carrying = carrier.getHolding();
+            CarryingData carrying = carrier.getCarryingData();
             if (carrying != null) {
                 Config config = Carrier.CONFIG;
                 if (config.getSlownessLevel() > 0)

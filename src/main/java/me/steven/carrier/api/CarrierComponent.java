@@ -17,11 +17,11 @@ public class CarrierComponent implements ComponentV3, AutoSyncedComponent {
     }
 
     @Nullable
-    public CarryingData getHolding() {
+    public CarryingData getCarryingData() {
         return carrying;
     }
 
-    public void setHolding(@Nullable CarryingData carrying) {
+    public void setCarryingData(@Nullable CarryingData carrying) {
         this.carrying = carrying;
         Carrier.HOLDER.sync(owner);
     }
@@ -37,8 +37,8 @@ public class CarrierComponent implements ComponentV3, AutoSyncedComponent {
             Identifier id = new Identifier(carryingTag.getString("type"));
             if (!CarriableRegistry.INSTANCE.contains(id)) return;
             CarryingData carrying = new CarryingData(id, carryingTag);
-            setHolding(carrying);
-        } else setHolding(null);
+            setCarryingData(carrying);
+        } else setCarryingData(null);
     }
 
     @Override

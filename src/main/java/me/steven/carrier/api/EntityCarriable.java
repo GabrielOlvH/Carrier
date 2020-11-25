@@ -42,7 +42,7 @@ public abstract class EntityCarriable<T extends Entity> implements Carriable<Ent
         entity.toTag(tag);
         ((AccessorEntity) entity).carrier_writeCustomDataToTag(tag);
         CarryingData carrying = new CarryingData(type, tag);
-        carrier.setHolding(carrying);
+        carrier.setCarryingData(carrying);
         entity.remove();
         return ActionResult.SUCCESS;
     }
@@ -50,7 +50,7 @@ public abstract class EntityCarriable<T extends Entity> implements Carriable<Ent
     @Override
     public @NotNull ActionResult tryPlace(@NotNull CarrierComponent carrier, @NotNull World world, @NotNull CarriablePlacementContext ctx) {
         if (world.isClient) return ActionResult.PASS;
-        CarryingData carrying = carrier.getHolding();
+        CarryingData carrying = carrier.getCarryingData();
         Entity entity = entityType.create(world);
         if (entity == null || carrying == null) return ActionResult.PASS;
         ((AccessorEntity) entity).carrier_readCustomDataFromTag(carrying.getTag());
@@ -59,7 +59,7 @@ public abstract class EntityCarriable<T extends Entity> implements Carriable<Ent
         entity.setPos(blockPos.getX() + 0.5F, blockPos.getY(), blockPos.getZ() + 0.5F);
         entity.refreshPositionAfterTeleport(entity.getPos());
         world.spawnEntity(entity);
-        carrier.setHolding(null);
+        carrier.setCarryingData(null);
         return ActionResult.SUCCESS;
     }
 

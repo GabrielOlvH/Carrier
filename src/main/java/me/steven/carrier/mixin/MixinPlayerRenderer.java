@@ -19,7 +19,7 @@ public class MixinPlayerRenderer {
     @Inject(method = "render", at = @At("TAIL"))
     private void carrier_renderCarrying(AbstractClientPlayerEntity player, float yaw, float tickDelta, MatrixStack matrices, VertexConsumerProvider vertexConsumerProvider, int light, CallbackInfo ci) {
         CarrierComponent carrier = Carrier.HOLDER.get(player);
-        CarryingData carrying = carrier.getHolding();
+        CarryingData carrying = carrier.getCarryingData();
         if (carrying == null) return;
         Carriable<?> carriable = CarriableRegistry.INSTANCE.get(carrying.getType());
         if (carriable != null) {

@@ -21,7 +21,7 @@ public abstract class MixinGameRenderer {
     private void carrier_renderCarrying(float tickDelta, long limitTime, MatrixStack matrix, CallbackInfo ci) {
         ClientPlayerEntity player = MinecraftClient.getInstance().player;
         CarrierComponent carrier = Carrier.HOLDER.get(player);
-        CarryingData carrying = carrier.getHolding();
+        CarryingData carrying = carrier.getCarryingData();
         if (carrying == null) return;
         Carriable<?> carriable = CarriableRegistry.INSTANCE.get(carrying.getType());
         if (carriable != null) {

@@ -55,7 +55,7 @@ public class CarriableChicken  extends EntityCarriable<ChickenEntity> {
     @Override
     @Environment(EnvType.CLIENT)
     public void render(@NotNull PlayerEntity player, @NotNull CarrierComponent carrier, @NotNull MatrixStack matrices, @NotNull VertexConsumerProvider vcp, float tickDelta, int light) {
-        updateEntity(carrier.getHolding());
+        updateEntity(carrier.getCarryingData());
         matrices.push();
         matrices.scale(0.9f, 0.9f, 0.9f);
         float yaw = MathHelper.lerpAngleDegrees(tickDelta, player.prevBodyYaw, player.bodyYaw);

@@ -46,14 +46,14 @@ public class CarriableGeneric implements Carriable<Block> {
         CarryingData carrying = new CarryingData(type, blockState, blockEntity);
         world.removeBlockEntity(blockPos);
         world.removeBlock(blockPos, false);
-        carrier.setHolding(carrying);
+        carrier.setCarryingData(carrying);
         return ActionResult.SUCCESS;
     }
 
     @Override
     public @NotNull ActionResult tryPlace(@NotNull CarrierComponent carrier, @NotNull World world, @NotNull CarriablePlacementContext ctx) {
         if (world.isClient) return ActionResult.PASS;
-        CarryingData carrying = carrier.getHolding();
+        CarryingData carrying = carrier.getCarryingData();
         if (carrying == null) return ActionResult.PASS;
         BlockPos pos = ctx.getBlockPos();
         BlockState state = carrying.getBlockState() == null ? parent.getDefaultState() : carrying.getBlockState();
@@ -63,7 +63,7 @@ public class CarriableGeneric implements Carriable<Block> {
             blockEntity.fromTag(state, carrying.getBlockEntityTag());
             blockEntity.setPos(pos);
         }
-        carrier.setHolding(null);
+        carrier.setCarryingData(null);
         world.updateNeighbors(pos, state.getBlock());
         return ActionResult.SUCCESS;
     }
