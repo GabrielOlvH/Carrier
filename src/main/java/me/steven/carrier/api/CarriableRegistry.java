@@ -1,37 +1,44 @@
 package me.steven.carrier.api;
 
+import com.google.common.collect.HashBiMap;
 import net.minecraft.util.Identifier;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Function;
 
 public class CarriableRegistry {
 
     public static final CarriableRegistry INSTANCE = new CarriableRegistry();
 
-    private final Map<Identifier, Carriable<?>> values = new HashMap<>();
-    private final Map<Object, Carriable<?>> parents = new HashMap<>();
+    private final HashBiMap<Identifier, Carriable<?>> idToEntry = HashBiMap.create();
+    private final HashBiMap<Object, Carriable<?>> objToEntry = HashBiMap.create();
 
     public <T> Carriable<T> register(Identifier identifier, Carriable<T> carriable) {
-        values.put(identifier, carriable);
-        parents.put(carriable.getParent(), carriable);
+        idToEntry.put(identifier, carriable);
+        objToEntry.put(carriable.getParent(), carriable);
         return carriable;
     }
 
     public boolean contains(Identifier identifier) {
-        return values.containsKey(identifier);
+        return idToEntry.containsKey(identifier);
     }
 
     public boolean contains(Object object) {
-        return parents.containsKey(object);
+        return objToEntry.containsKey(object);
     }
 
+    @SuppressWarnings("unchecked")
     public <T> Carriable<T> get(Identifier identifier) {
-        return (Carriable<T>) values.get(identifier);
+        return (Carriable<T>) idToEntry.get(identifier);
     }
 
+    @SuppressWarnings("unchecked")
     public <T> Carriable<T> get(T obj) {
-        return (Carriable<T>) parents.get(obj);
+        return (Carriable<T>) objToEntry.get(obj);
+    }
+
+    public <T> Identifier getId(Carriable<T> carriable) {
+        return idToEntry.inverse().get(carriable);
+    }
+
+    public <T> Object getObject(Carriable<T> carriable) {
+        return objToEntry.inverse().get(carriable);
     }
 }
