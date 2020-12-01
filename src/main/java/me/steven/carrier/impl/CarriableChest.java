@@ -5,7 +5,6 @@ import me.steven.carrier.api.CarrierComponent;
 import me.steven.carrier.api.CarryingData;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
-import net.minecraft.block.Blocks;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.OverlayTexture;
@@ -38,7 +37,7 @@ public class CarriableChest extends CarriableGeneric {
         if (carrying == null) return ActionResult.PASS;
         BlockPos pos = ctx.getBlockPos();
 
-        BlockState state = Blocks.CHEST.getPlacementState(new ItemPlacementContext(carrier.getOwner(), Hand.MAIN_HAND, ItemStack.EMPTY, new BlockHitResult(new Vec3d(pos.getX(), pos.getY(), pos.getZ()), ctx.getSide(), ctx.getBlockPos(), false)));
+        BlockState state = parent.getPlacementState(new ItemPlacementContext(carrier.getOwner(), Hand.MAIN_HAND, ItemStack.EMPTY, new BlockHitResult(new Vec3d(pos.getX(), pos.getY(), pos.getZ()), ctx.getSide(), ctx.getBlockPos(), false)));
         world.setBlockState(pos, state);
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity != null) {
