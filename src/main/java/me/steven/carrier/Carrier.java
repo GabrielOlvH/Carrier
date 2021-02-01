@@ -6,10 +6,7 @@ import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistryV3;
 import dev.onyxstudios.cca.api.v3.entity.EntityComponentFactoryRegistry;
 import dev.onyxstudios.cca.api.v3.entity.EntityComponentInitializer;
-import me.steven.carrier.api.Carriable;
-import me.steven.carrier.api.CarriableRegistry;
-import me.steven.carrier.api.CarrierComponent;
-import me.steven.carrier.api.CarrierPlayerExtension;
+import me.steven.carrier.api.*;
 import me.steven.carrier.impl.*;
 import me.steven.carrier.items.GloveItem;
 import nerdhub.cardinal.components.api.util.RespawnCopyStrategy;
@@ -29,10 +26,12 @@ import net.minecraft.item.ItemGroup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Style;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
@@ -136,6 +135,24 @@ public class Carrier implements ModInitializer, EntityComponentInitializer {
                             component.writeToNbt(tag);
                             component.setCarryingData(null);
                             ctx.getSource().sendFeedback(new LiteralText("Deleted ").append(new LiteralText(tag.toString()).setStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, tag.toString())))), false);
+                            return 1;
+                        })));
+
+        CommandRegistrationCallback.EVENT.register((commandDispatcher, b) ->
+                commandDispatcher.register(CommandManager.literal("carrierplace")
+                        .executes((ctx) -> {
+                            ServerPlayerEntity player = ctx.getSource().getPlayer();
+                            CarrierComponent component = HOLDER.get(player);
+                            Carriable<Object> carriable = CarriableRegistry.INSTANCE.get(component.getCarryingData().getType());
+                            BlockPos pos = player.getBlockPos().offset(player.getHorizontalFacing());
+                            ServerWorld world = ctx.getSource().getWorld();
+                            if (!world.getBlockState(pos).getMaterial().isReplaceable()) {
+                                ctx.getSource().sendFeedback(new LiteralText("Could not place! Make sure you have empty space in front of you."), false);
+                                return 1;
+                            }
+                            CarriablePlacementContext placementCtx = new CarriablePlacementContext(component, carriable, pos, player.getHorizontalFacing().getOpposite(), player.getHorizontalFacing());
+                            carriable.tryPlace(component, world, placementCtx);
+                            component.setCarryingData(null);
                             return 1;
                         })));
     }
