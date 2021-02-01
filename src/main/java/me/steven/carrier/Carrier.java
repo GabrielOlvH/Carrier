@@ -12,6 +12,9 @@ import me.steven.carrier.api.CarrierPlayerExtension;
 import me.steven.carrier.impl.*;
 import me.steven.carrier.items.GloveItem;
 import nerdhub.cardinal.components.api.util.RespawnCopyStrategy;
+import net.devtech.arrp.api.RRPCallback;
+import net.devtech.arrp.api.RuntimeResourcePack;
+import net.devtech.arrp.json.recipe.*;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
@@ -94,9 +97,21 @@ public class Carrier implements ModInitializer, EntityComponentInitializer {
             Identifier type = new Identifier("carrier", id.getPath());
             registerGenericCarriable(block, type);
         });
+
+        Registry.register(Registry.ITEM, new Identifier(MOD_ID, "glove"), ITEM_GLOVE);
+
         if (CONFIG.doGlovesExist()) {
-            Registry.register(Registry.ITEM, new Identifier(MOD_ID, "glove"), ITEM_GLOVE);
+            RuntimeResourcePack resourcePack = RuntimeResourcePack.create(MOD_ID + ":gloves");
+            resourcePack.addRecipe(new Identifier(MOD_ID, "gloves"),
+                    JRecipe.shaped(
+                            JPattern.pattern("L  ", "LL "),
+                            JKeys.keys().key("L", JIngredient.ingredient().item("minecraft:leather")),
+                            JResult.item(ITEM_GLOVE)
+                    )
+            );
+            RRPCallback.EVENT.register(packs -> packs.add(resourcePack));
         }
+
         ServerSidePacketRegistry.INSTANCE.register(SET_CAN_CARRY_PACKET, (ctx, buf) -> {
             boolean canCarry = buf.readBoolean();
             ctx.getTaskQueue().execute(() ->

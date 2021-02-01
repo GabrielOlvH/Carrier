@@ -6,7 +6,6 @@
     "AccessorEntity",
     "MixinAbstractBlock",
     "MixinMobEntity",
-    "MixinRecipeManager",
     "MixinServerPlayerEntity"
   ],
   "client": [

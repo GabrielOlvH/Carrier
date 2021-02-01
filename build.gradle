@@ -14,6 +14,16 @@ repositories {
     maven {
         name = "Ladysnake Libs"
         url = "https://dl.bintray.com/ladysnake/libs"
+        content {
+            includeGroup "io.github.onyxstudios.Cardinal-Components-API"
+        }
+    }
+    maven {
+        name = "ARRP"
+        url = "https://raw.githubusercontent.com/Devan-Kerman/Devan-Repo/master/"
+        content {
+            includeGroup "net.devtech"
+        }
     }
 }
 
@@ -30,6 +40,8 @@ dependencies {
     include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-base:${project.cardinal_components}"
     modImplementation "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-entity:${project.cardinal_components}"
     include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-entity:${project.cardinal_components}"
+    modImplementation "net.devtech:arrp:0.3.5"
+    include "net.devtech:arrp:0.3.5"
 }
 
 processResources {
