@@ -6,6 +6,7 @@ import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistryV3;
 import dev.onyxstudios.cca.api.v3.entity.EntityComponentFactoryRegistry;
 import dev.onyxstudios.cca.api.v3.entity.EntityComponentInitializer;
+import me.steven.carrier.api.Carriable;
 import me.steven.carrier.api.CarriableRegistry;
 import me.steven.carrier.api.CarrierComponent;
 import me.steven.carrier.api.CarrierPlayerExtension;
@@ -22,9 +23,7 @@ import net.fabricmc.fabric.api.event.registry.RegistryEntryAddedCallback;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.block.AbstractChestBlock;
-import net.minecraft.block.Block;
-import net.minecraft.block.BlockEntityProvider;
+import net.minecraft.block.*;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
 import net.minecraft.nbt.CompoundTag;
@@ -157,6 +156,8 @@ public class Carrier implements ModInitializer, EntityComponentInitializer {
             if (!CarriableRegistry.INSTANCE.contains(type)) {
                 if (block instanceof AbstractChestBlock<?>)
                     CarriableRegistry.INSTANCE.register(type, new CarriableChest(type, block));
+                else if (block instanceof AbstractBannerBlock)
+                    CarriableRegistry.INSTANCE.register(type, new CarriableBanner(type, block));
                 else
                     CarriableRegistry.INSTANCE.register(type, new CarriableGeneric(type, block));
             }
