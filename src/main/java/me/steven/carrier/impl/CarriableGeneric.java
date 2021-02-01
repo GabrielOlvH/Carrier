@@ -4,6 +4,7 @@ import me.steven.carrier.api.Carriable;
 import me.steven.carrier.api.CarriablePlacementContext;
 import me.steven.carrier.api.CarrierComponent;
 import me.steven.carrier.api.CarryingData;
+import me.steven.carrier.mixin.AccessorBlockEntity;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -15,6 +16,7 @@ import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -60,8 +62,9 @@ public class CarriableGeneric implements Carriable<Block> {
         world.setBlockState(pos, state);
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity != null) {
-            blockEntity.fromTag(state, carrying.getBlockEntityTag());
-            blockEntity.setPos(pos);
+            CompoundTag tag = carrying.getBlockEntityTag();
+            ((AccessorBlockEntity) blockEntity).carrier_writeIdentifyingData(tag);
+            blockEntity.fromTag(state, tag);
         }
         carrier.setCarryingData(null);
         world.updateNeighbors(pos, state.getBlock());
