@@ -13,6 +13,7 @@ import me.steven.carrier.impl.*;
 import me.steven.carrier.items.GloveItem;
 import nerdhub.cardinal.components.api.util.RespawnCopyStrategy;
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.registry.RegistryEntryAddedCallback;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
@@ -23,6 +24,12 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.command.CommandManager;
+import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.text.ClickEvent;
+import net.minecraft.text.LiteralText;
+import net.minecraft.text.Style;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import org.apache.commons.io.FileUtils;
@@ -95,6 +102,28 @@ public class Carrier implements ModInitializer, EntityComponentInitializer {
             ctx.getTaskQueue().execute(() ->
                     ((CarrierPlayerExtension) ctx.getPlayer()).setCanCarry(canCarry));
         });
+
+        CommandRegistrationCallback.EVENT.register((commandDispatcher, b) ->
+                commandDispatcher.register(CommandManager.literal("carrierinfo")
+                        .executes((ctx) -> {
+                            ServerPlayerEntity player = ctx.getSource().getPlayer();
+                            CompoundTag tag = new CompoundTag();
+                            HOLDER.get(player).writeToNbt(tag);
+                            ctx.getSource().sendFeedback(new LiteralText(tag.toString()), false);
+                            return 1;
+                        })));
+
+        CommandRegistrationCallback.EVENT.register((commandDispatcher, b) ->
+                commandDispatcher.register(CommandManager.literal("carrierdelete")
+                        .executes((ctx) -> {
+                            ServerPlayerEntity player = ctx.getSource().getPlayer();
+                            CarrierComponent component = HOLDER.get(player);
+                            CompoundTag tag = new CompoundTag();
+                            component.writeToNbt(tag);
+                            component.setCarryingData(null);
+                            ctx.getSource().sendFeedback(new LiteralText("Deleted ").append(new LiteralText(tag.toString()).setStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, tag.toString())))), false);
+                            return 1;
+                        })));
     }
 
     @Override
