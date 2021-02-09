@@ -2,6 +2,7 @@ package me.steven.carrier;
 
 import me.steven.carrier.api.*;
 import net.minecraft.block.Block;
+import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemUsageContext;
@@ -23,10 +24,11 @@ public class HolderInteractCallback {
     public ActionResult interact(PlayerEntity player, World world, Hand hand, BlockPos pos, Direction hitDirection, boolean canPickup) {
         if (hand == Hand.OFF_HAND) return ActionResult.PASS;
         if (!world.canPlayerModifyAt(player, pos)) return ActionResult.PASS;
-        Block block = world.getBlockState(pos).getBlock();
+        BlockState blockState = world.getBlockState(pos);
+        Block block = blockState.getBlock();
         CarrierComponent carrier = Carrier.HOLDER.get(player);
         CarryingData carrying = carrier.getCarryingData();
-        if (canPickup && carrying == null && CarriableRegistry.INSTANCE.contains(block)) {
+        if (canPickup && carrying == null && CarriableRegistry.INSTANCE.contains(block) && blockState.getHardness(world, pos) > -1) {
             if (world.isClient && !Carrier.canCarry(Registry.BLOCK.getId(block))) return ActionResult.CONSUME;
             Carriable<?> carriable = CarriableRegistry.INSTANCE.get(block);
             if (world.canPlayerModifyAt(player, pos) && carriable != null && Carrier.canCarry(Registry.BLOCK.getId(block))) {
