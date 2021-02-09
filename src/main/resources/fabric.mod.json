@@ -9,7 +9,9 @@
     "GabrielOlvH"
   ],
   "contact": {
-    "sources": "https://github.com/GabrielOlvH/Carrier"
+    "sources": "https://github.com/GabrielOlvH/Carrier",
+    "homepage": "https://www.curseforge.com/minecraft/mc-mods/carrier",
+    "issues": "https://github.com/GabrielOlvH/Carrier/issues"
   },
 
   "license": "Apache-2.0",
