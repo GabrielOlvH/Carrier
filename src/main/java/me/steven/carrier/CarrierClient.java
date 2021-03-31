@@ -17,7 +17,6 @@ public class CarrierClient implements ClientModInitializer {
         });
     }
 
-
     public static final KeyBinding KEY_BINDING =
             KeyBindingHelper.registerKeyBinding(
                     new KeyBinding("carrier.key", InputUtil.Type.KEYSYM, GLFW.GLFW_KEY_UNKNOWN, "category.carrier")

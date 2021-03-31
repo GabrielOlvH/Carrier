@@ -72,12 +72,12 @@ public class HolderInteractCallback {
 
     public ActionResult interact(PlayerEntity player, World world, Hand hand, BlockHitResult hitResult) {
         return interact(player, world, hand, hitResult.getBlockPos(), hitResult.getSide(), !Carrier.CONFIG.doGlovesExist()
-                && ((CarrierPlayerExtension) player).canCarry() && player.getStackInHand(hand).isEmpty());
+                && Carrier.isHoldingKey(player) && player.getStackInHand(hand).isEmpty());
     }
 
     public ActionResult interact(PlayerEntity player, World world, Hand hand, Entity entity) {
         return interact(player, world, hand, entity, !Carrier.CONFIG.doGlovesExist()
-                && ((CarrierPlayerExtension) player).canCarry()
+                && Carrier.isHoldingKey(player)
                 && player.getStackInHand(hand).isEmpty());
     }
 
