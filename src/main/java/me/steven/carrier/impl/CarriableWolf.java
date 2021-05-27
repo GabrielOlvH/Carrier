@@ -1,5 +1,6 @@
 package me.steven.carrier.impl;
 
+import me.steven.carrier.ClientUtils;
 import me.steven.carrier.api.CarrierComponent;
 import me.steven.carrier.api.EntityCarriable;
 import net.fabricmc.api.EnvType;
@@ -9,12 +10,12 @@ import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.client.render.entity.WolfEntityRenderer;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.passive.WolfEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3f;
 import org.jetbrains.annotations.NotNull;
 
 public class CarriableWolf extends EntityCarriable<WolfEntity> {
@@ -47,7 +48,7 @@ public class CarriableWolf extends EntityCarriable<WolfEntity> {
     @Environment(EnvType.CLIENT)
     public EntityRenderer<WolfEntity> getEntityRenderer() {
         if (wolfRenderer == null)
-            wolfRenderer = new WolfEntityRenderer(MinecraftClient.getInstance().getEntityRenderDispatcher());
+            wolfRenderer = new WolfEntityRenderer(ClientUtils.defaultEntityCtx());
         return wolfRenderer;
     }
 
@@ -59,7 +60,7 @@ public class CarriableWolf extends EntityCarriable<WolfEntity> {
         matrices.push();
         matrices.scale(0.6f, 0.6f, 0.6f);
         float yaw = MathHelper.lerpAngleDegrees(tickDelta, player.prevBodyYaw, player.bodyYaw);
-        matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-yaw + 90));
+        matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-yaw + 90));
         matrices.translate(-0.6, 0.8, -0.1);
         getEntityRenderer().render(getEntity(), 0, tickDelta, matrices, vcp, light);
         matrices.pop();

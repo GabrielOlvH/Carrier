@@ -21,8 +21,8 @@ public class MixinPlayerModel extends BipedEntityModel<PlayerEntity> {
 
     @Shadow @Final public ModelPart leftSleeve;
 
-    public MixinPlayerModel(float scale) {
-        super(scale);
+    public MixinPlayerModel(ModelPart root) {
+        super(root);
     }
 
     @Inject(method = "setAngles", at = @At("RETURN"))

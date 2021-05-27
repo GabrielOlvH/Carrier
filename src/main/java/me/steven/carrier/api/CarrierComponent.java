@@ -4,7 +4,7 @@ import dev.onyxstudios.cca.api.v3.component.ComponentV3;
 import dev.onyxstudios.cca.api.v3.component.sync.AutoSyncedComponent;
 import me.steven.carrier.Carrier;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.Identifier;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,9 +31,9 @@ public class CarrierComponent implements ComponentV3, AutoSyncedComponent {
     }
 
     @Override
-    public void readFromNbt(CompoundTag tag) {
+    public void readFromNbt(NbtCompound tag) {
         if (tag.contains("carrying")) {
-            CompoundTag carryingTag = tag.getCompound("carrying");
+            NbtCompound carryingTag = tag.getCompound("carrying");
             Identifier id = new Identifier(carryingTag.getString("type"));
             if (!CarriableRegistry.INSTANCE.contains(id)) return;
             CarryingData carrying = new CarryingData(id, carryingTag);
@@ -42,9 +42,9 @@ public class CarrierComponent implements ComponentV3, AutoSyncedComponent {
     }
 
     @Override
-    public void writeToNbt(CompoundTag tag) {
+    public void writeToNbt(NbtCompound tag) {
         if (carrying != null) {
-            CompoundTag carryingTag = carrying.getTag();
+            NbtCompound carryingTag = carrying.getTag();
             carryingTag.putString("type", carrying.getType().toString());
             tag.put("carrying", carryingTag);
         }

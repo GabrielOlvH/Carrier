@@ -6,10 +6,10 @@ import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistryV3;
 import dev.onyxstudios.cca.api.v3.entity.EntityComponentFactoryRegistry;
 import dev.onyxstudios.cca.api.v3.entity.EntityComponentInitializer;
+import dev.onyxstudios.cca.api.v3.entity.RespawnCopyStrategy;
 import me.steven.carrier.api.*;
 import me.steven.carrier.impl.*;
 import me.steven.carrier.items.GloveItem;
-import nerdhub.cardinal.components.api.util.RespawnCopyStrategy;
 import net.devtech.arrp.api.RRPCallback;
 import net.devtech.arrp.api.RuntimeResourcePack;
 import net.devtech.arrp.json.recipe.*;
@@ -27,7 +27,7 @@ import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
@@ -124,7 +124,7 @@ public class Carrier implements ModInitializer, EntityComponentInitializer {
                 commandDispatcher.register(CommandManager.literal("carrierinfo")
                         .executes((ctx) -> {
                             ServerPlayerEntity player = ctx.getSource().getPlayer();
-                            CompoundTag tag = new CompoundTag();
+                            NbtCompound tag = new NbtCompound();
                             HOLDER.get(player).writeToNbt(tag);
                             ctx.getSource().sendFeedback(new LiteralText(tag.toString()), false);
                             return 1;
@@ -135,7 +135,7 @@ public class Carrier implements ModInitializer, EntityComponentInitializer {
                         .executes((ctx) -> {
                             ServerPlayerEntity player = ctx.getSource().getPlayer();
                             CarrierComponent component = HOLDER.get(player);
-                            CompoundTag tag = new CompoundTag();
+                            NbtCompound tag = new NbtCompound();
                             component.writeToNbt(tag);
                             component.setCarryingData(null);
                             ctx.getSource().sendFeedback(new LiteralText("Deleted ").append(new LiteralText(tag.toString()).setStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, tag.toString())))), false);

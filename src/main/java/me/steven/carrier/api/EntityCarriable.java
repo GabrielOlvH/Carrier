@@ -7,7 +7,7 @@ import net.minecraft.client.render.entity.EntityRenderer;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
@@ -38,12 +38,12 @@ public abstract class EntityCarriable<T extends Entity> implements Carriable<Ent
     @Override
     public @NotNull ActionResult tryPickup(@NotNull CarrierComponent carrier, @NotNull World world, @NotNull BlockPos blockPos, @Nullable Entity entity) {
         if (world.isClient || entity == null) return ActionResult.PASS;
-        CompoundTag tag = new CompoundTag();
-        entity.toTag(tag);
-        ((AccessorEntity) entity).carrier_writeCustomDataToTag(tag);
+        NbtCompound tag = new NbtCompound();
+        entity.writeNbt(tag);
+        ((AccessorEntity) entity).carrier_writeCustomDataToNbt(tag);
         CarryingData carrying = new CarryingData(type, tag);
         carrier.setCarryingData(carrying);
-        entity.remove();
+        entity.remove(Entity.RemovalReason.DISCARDED);
         return ActionResult.SUCCESS;
     }
 
@@ -53,8 +53,8 @@ public abstract class EntityCarriable<T extends Entity> implements Carriable<Ent
         CarryingData carrying = carrier.getCarryingData();
         Entity entity = entityType.create(world);
         if (entity == null || carrying == null) return ActionResult.PASS;
-        ((AccessorEntity) entity).carrier_readCustomDataFromTag(carrying.getTag());
-        entity.fromTag(carrying.getTag());
+        ((AccessorEntity) entity).carrier_readCustomDataFromNbt(carrying.getTag());
+        entity.readNbt(carrying.getTag());
         BlockPos blockPos = ctx.getBlockPos();
         entity.setPos(blockPos.getX() + 0.5F, blockPos.getY(), blockPos.getZ() + 0.5F);
         entity.refreshPositionAfterTeleport(entity.getPos());
@@ -65,16 +65,16 @@ public abstract class EntityCarriable<T extends Entity> implements Carriable<Ent
 
     protected void updateEntity(CarryingData carrying) {
         if (!carrying.getTag().getUuid("UUID").equals(getEntity().getUuid())) {
-            getEntity().fromTag(carrying.getTag());
+            getEntity().readNbt(carrying.getTag());
         }
         if (getEntity() instanceof LivingEntity) {
             LivingEntity entity = (LivingEntity) getEntity();
             entity.bodyYaw = 0;
             entity.prevBodyYaw =0;
         }
-        getEntity().yaw = 0;
+        getEntity().setYaw(0);
         getEntity().prevYaw = 0;
-        getEntity().pitch = 0;
+        getEntity().setPitch(0);
         getEntity().prevPitch = 0;
         getEntity().setHeadYaw(0);
     }

@@ -1,7 +1,7 @@
 {
   "required": true,
   "package": "me.steven.carrier.mixin",
-  "compatibilityLevel": "JAVA_8",
+  "compatibilityLevel": "JAVA_16",
   "mixins": [
     "AccessorBlockEntity",
     "AccessorEntity",

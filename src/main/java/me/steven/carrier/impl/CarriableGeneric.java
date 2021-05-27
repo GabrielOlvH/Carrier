@@ -13,14 +13,14 @@ import net.minecraft.client.render.OverlayTexture;
 import net.minecraft.client.render.VertexConsumerProvider;
 import net.minecraft.client.render.block.BlockRenderManager;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.client.util.math.Vector3f;
 import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.Vec3f;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -62,9 +62,9 @@ public class CarriableGeneric implements Carriable<Block> {
         world.setBlockState(pos, state);
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity != null) {
-            CompoundTag tag = carrying.getBlockEntityTag();
+            NbtCompound tag = carrying.getBlockEntityTag();
             ((AccessorBlockEntity) blockEntity).carrier_writeIdentifyingData(tag);
-            blockEntity.fromTag(state, tag);
+            blockEntity.readNbt(tag);
         }
         carrier.setCarryingData(null);
         world.updateNeighbors(pos, state.getBlock());
@@ -77,8 +77,8 @@ public class CarriableGeneric implements Carriable<Block> {
         matrices.push();
         matrices.scale(0.6f, 0.6f, 0.6f);
         float yaw = MathHelper.lerpAngleDegrees(tickDelta, player.prevBodyYaw, player.bodyYaw);
-        matrices.multiply(Vector3f.NEGATIVE_Y.getDegreesQuaternion(180));
-        matrices.multiply(Vector3f.POSITIVE_Y.getDegreesQuaternion(-yaw));
+        matrices.multiply(Vec3f.NEGATIVE_Y.getDegreesQuaternion(180));
+        matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-yaw));
         matrices.translate(-0.5, 0.8, -1.3);
         BlockRenderManager blockRenderManager = MinecraftClient.getInstance().getBlockRenderManager();
         try {
