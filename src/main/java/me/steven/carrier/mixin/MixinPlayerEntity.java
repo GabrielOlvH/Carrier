@@ -49,10 +49,8 @@ public abstract class MixinPlayerEntity extends LivingEntity  {
         if (carrying != null) {
             Carriable<?> carriable = CarriableRegistry.INSTANCE.get(carrying.getType());
             BlockPos pos = this.getBlockPos();
-            if (!world.isClient && carriable != null && world.getBlockState(pos).getMaterial().isReplaceable()) {
-                if (carriable.tryPlace(carrier, world, new CarriablePlacementContext(carrier, carriable, pos, Direction.DOWN, this.getHorizontalFacing())).isAccepted())
-                    carrier.setCarryingData(null);
-            }else {
+            if (!world.isClient && carriable != null && world.getBlockState(pos).getMaterial().isReplaceable() &&
+                    carriable.tryPlace(carrier, world, new CarriablePlacementContext(carrier, carriable, pos, Direction.DOWN, this.getHorizontalFacing())).isAccepted()) {
                 carrier.setCarryingData(null);
             }
         }
