@@ -42,7 +42,7 @@ public abstract class MixinPlayerEntity extends LivingEntity  {
             cir.setReturnValue(false);
         }
     }
-    @Inject(method = "dropInventory", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerInventory;dropAll()V"))
+    @Inject(method = "dropInventory", at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/player/PlayerInventory;dropAll()V", shift = At.Shift.AFTER))
     private void c(CallbackInfo ci) {
         CarrierComponent carrier = Carrier.HOLDER.get(this);
         CarryingData carrying = carrier.getCarryingData();
