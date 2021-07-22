@@ -1,48 +1,34 @@
 package me.steven.carrier;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
 import dev.onyxstudios.cca.api.v3.component.ComponentKey;
 import dev.onyxstudios.cca.api.v3.component.ComponentRegistryV3;
 import dev.onyxstudios.cca.api.v3.entity.EntityComponentFactoryRegistry;
 import dev.onyxstudios.cca.api.v3.entity.EntityComponentInitializer;
 import dev.onyxstudios.cca.api.v3.entity.RespawnCopyStrategy;
 import me.steven.carrier.api.*;
-import me.steven.carrier.impl.*;
+import me.steven.carrier.api.event.RegisterCarriableCallback;
+import me.steven.carrier.impl.EntityCarriable;
+import me.steven.carrier.impl.blocks.*;
 import me.steven.carrier.items.GloveItem;
 import net.devtech.arrp.api.RRPCallback;
 import net.devtech.arrp.api.RuntimeResourcePack;
 import net.devtech.arrp.json.recipe.*;
 import net.fabricmc.api.ModInitializer;
-import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.registry.RegistryEntryAddedCallback;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
-import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.AbstractBannerBlock;
 import net.minecraft.block.AbstractChestBlock;
 import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.server.command.CommandManager;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.text.ClickEvent;
-import net.minecraft.text.LiteralText;
-import net.minecraft.text.Style;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.registry.Registry;
-import org.apache.commons.io.FileUtils;
-import org.apache.logging.log4j.LogManager;
 
-import java.io.File;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.regex.Pattern;
 
 public class Carrier implements ModInitializer, EntityComponentInitializer {
@@ -59,42 +45,26 @@ public class Carrier implements ModInitializer, EntityComponentInitializer {
 
     @Override
     public void onInitialize() {
-        Gson gson = new GsonBuilder().setPrettyPrinting().create();
-        File file = new File(FabricLoader.getInstance().getConfigDir().toFile(), "carrier.json");
-        if (!file.exists()) {
-            try {
-                if (!file.createNewFile()) throw new IOException("Failed to create file");
-                FileUtils.write(file, gson.toJson(CONFIG), StandardCharsets.UTF_8);
-            } catch (IOException e) {
-                LogManager.getLogger("Carrier").error("Failed to create carrier config");
-                throw new RuntimeException(e);
-            }
-        } else {
-            try {
-                String lines = String.join("\n", FileUtils.readLines(file, StandardCharsets.UTF_8));
-                CONFIG = gson.fromJson(lines, Config.class);
-            } catch (IOException e) {
-                LogManager.getLogger("Carrier").error("Failed to read config");
-                throw new RuntimeException(e);
-            }
-        }
+        CONFIG = Config.getConfig();
 
         ServerTickEvents.END_WORLD_TICK.register(new ServerWorldTickCallback());
-        CarriableRegistry.INSTANCE.register(new Identifier(MOD_ID, "cow"), new CarriableCow());
-        CarriableRegistry.INSTANCE.register(new Identifier(MOD_ID, "chicken"), new CarriableChicken());
-        CarriableRegistry.INSTANCE.register(new Identifier(MOD_ID, "parrot"), new CarriableParrot());
-        CarriableRegistry.INSTANCE.register(new Identifier(MOD_ID, "pig"), new CarriablePig());
-        CarriableRegistry.INSTANCE.register(new Identifier(MOD_ID, "rabbit"), new CarriableRabbit());
-        CarriableRegistry.INSTANCE.register(new Identifier(MOD_ID, "sheep"), new CarriableSheep());
-        CarriableRegistry.INSTANCE.register(new Identifier(MOD_ID, "turtle"), new CarriableTurtle());
-        CarriableRegistry.INSTANCE.register(new Identifier(MOD_ID, "wolf"), new CarriableWolf());
-        CarriableRegistry.INSTANCE.register(new Identifier(MOD_ID, "spawner"), new CarriableSpawner(new Identifier(MOD_ID, "spawner")));
-        CarriableRegistry.INSTANCE.register(new Identifier(MOD_ID, "enchanting_table"), new CarriableEnchantingTable(new Identifier(MOD_ID, "enchanting_table")));
+
+
+        Registry.ENTITY_TYPE.forEach((entityType) -> {
+            Identifier type = new Identifier("carrier", Registry.ENTITY_TYPE.getId(entityType).getPath());
+            registerGenericCarriable(entityType, type);
+        });
+
+        RegistryEntryAddedCallback.event(Registry.ENTITY_TYPE).register((rawId, id, entityType) -> {
+            Identifier type = new Identifier("carrier", id.getPath());
+            registerGenericCarriable(entityType, type);
+        });
 
         Registry.BLOCK.forEach((block) -> {
             Identifier type = new Identifier("carrier", Registry.BLOCK.getId(block).getPath());
             registerGenericCarriable(block, type);
         });
+
         RegistryEntryAddedCallback.event(Registry.BLOCK).register((rawId, id, block) -> {
             Identifier type = new Identifier("carrier", id.getPath());
             registerGenericCarriable(block, type);
@@ -120,45 +90,7 @@ public class Carrier implements ModInitializer, EntityComponentInitializer {
                     ((CarrierPlayerExtension) ctx.getPlayer()).setCanCarry(canCarry));
         });
 
-        CommandRegistrationCallback.EVENT.register((commandDispatcher, b) ->
-                commandDispatcher.register(CommandManager.literal("carrierinfo")
-                        .executes((ctx) -> {
-                            ServerPlayerEntity player = ctx.getSource().getPlayer();
-                            NbtCompound tag = new NbtCompound();
-                            HOLDER.get(player).writeToNbt(tag);
-                            ctx.getSource().sendFeedback(new LiteralText(tag.toString()), false);
-                            return 1;
-                        })));
-
-        CommandRegistrationCallback.EVENT.register((commandDispatcher, b) ->
-                commandDispatcher.register(CommandManager.literal("carrierdelete")
-                        .executes((ctx) -> {
-                            ServerPlayerEntity player = ctx.getSource().getPlayer();
-                            CarrierComponent component = HOLDER.get(player);
-                            NbtCompound tag = new NbtCompound();
-                            component.writeToNbt(tag);
-                            component.setCarryingData(null);
-                            ctx.getSource().sendFeedback(new LiteralText("Deleted ").append(new LiteralText(tag.toString()).setStyle(Style.EMPTY.withClickEvent(new ClickEvent(ClickEvent.Action.COPY_TO_CLIPBOARD, tag.toString())))), false);
-                            return 1;
-                        })));
-
-        CommandRegistrationCallback.EVENT.register((commandDispatcher, b) ->
-                commandDispatcher.register(CommandManager.literal("carrierplace")
-                        .executes((ctx) -> {
-                            ServerPlayerEntity player = ctx.getSource().getPlayer();
-                            CarrierComponent component = HOLDER.get(player);
-                            Carriable<Object> carriable = CarriableRegistry.INSTANCE.get(component.getCarryingData().getType());
-                            BlockPos pos = player.getBlockPos().offset(player.getHorizontalFacing());
-                            ServerWorld world = ctx.getSource().getWorld();
-                            if (!world.getBlockState(pos).getMaterial().isReplaceable()) {
-                                ctx.getSource().sendFeedback(new LiteralText("Could not place! Make sure you have empty space in front of you."), false);
-                                return 1;
-                            }
-                            CarriablePlacementContext placementCtx = new CarriablePlacementContext(component, carriable, pos, player.getHorizontalFacing().getOpposite(), player.getHorizontalFacing());
-                            carriable.tryPlace(component, world, placementCtx);
-                            component.setCarryingData(null);
-                            return 1;
-                        })));
+        CarrierCommands.register();
     }
 
     @Override
@@ -167,7 +99,8 @@ public class Carrier implements ModInitializer, EntityComponentInitializer {
     }
 
     public static boolean canCarry(Identifier id) {
-        if (CONFIG.getType() == Config.ListType.WHITELIST) return CONFIG.getList().stream().anyMatch((s) -> Pattern.compile(s).matcher(id.toString()).find());
+        if (CONFIG.getType() == Config.ListType.WHITELIST)
+            return CONFIG.getList().stream().anyMatch((s) -> Pattern.compile(s).matcher(id.toString()).find());
         else return CONFIG.getList().stream().noneMatch((s) -> Pattern.compile(s).matcher(id.toString()).find());
     }
 
@@ -177,14 +110,23 @@ public class Carrier implements ModInitializer, EntityComponentInitializer {
 
     private static void registerGenericCarriable(Block block, Identifier type) {
         if (block instanceof BlockEntityProvider) {
-            if (!CarriableRegistry.INSTANCE.contains(type)) {
-                if (block instanceof AbstractChestBlock<?>)
-                    CarriableRegistry.INSTANCE.register(type, new CarriableChest(type, block));
-                else if (block instanceof AbstractBannerBlock)
-                    CarriableRegistry.INSTANCE.register(type, new CarriableBanner(type, block));
-                else
-                    CarriableRegistry.INSTANCE.register(type, new CarriableGeneric(type, block));
-            }
+            Carriable<?> carriable = RegisterCarriableCallback.BLOCK_EVENT.invoker().register(block);
+            if (carriable != null)
+                CarriableRegistry.INSTANCE.register(type, carriable);
+            else if (block instanceof AbstractChestBlock<?> chest)
+                CarriableRegistry.INSTANCE.register(type, new CarriableChest(type, chest));
+            else if (block instanceof AbstractBannerBlock banner)
+                CarriableRegistry.INSTANCE.register(type, new CarriableBanner(type, banner));
+            else
+                CarriableRegistry.INSTANCE.register(type, new BaseCarriableBlock<>(type, block));
         }
+    }
+
+    private static void registerGenericCarriable(EntityType<?> entityType, Identifier type) {
+        Carriable<?> carriable = RegisterCarriableCallback.ENTITY_EVENT.invoker().register(entityType);
+        if (carriable != null)
+            CarriableRegistry.INSTANCE.register(type, carriable);
+        else
+            CarriableRegistry.INSTANCE.register(type, new EntityCarriable<>(type, entityType));
     }
 }

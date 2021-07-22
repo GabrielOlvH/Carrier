@@ -4,22 +4,18 @@ import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 
 public class CarriablePlacementContext {
-    private final CarrierComponent carrier;
     private final Carriable<?> carriable;
     private final BlockPos blockPos;
     private final Direction side;
     private final Direction playerLook;
+    private final boolean isSneaking;
 
-    public CarriablePlacementContext(CarrierComponent carrier, Carriable<?> carriable, BlockPos blockPos, Direction side, Direction playerLook) {
-        this.carrier = carrier;
+    public CarriablePlacementContext(Carriable<?> carriable, BlockPos blockPos, Direction side, Direction playerLook, boolean isSneaking) {
         this.carriable = carriable;
         this.blockPos = blockPos;
         this.side = side;
         this.playerLook = playerLook;
-    }
-
-    public CarrierComponent getHolder() {
-        return carrier;
+        this.isSneaking = isSneaking;
     }
 
     public Carriable<?> getCarriable() {
@@ -36,5 +32,9 @@ public class CarriablePlacementContext {
 
     public Direction getPlayerLook() {
         return playerLook;
+    }
+
+    public boolean isSneaking() {
+        return isSneaking;
     }
 }

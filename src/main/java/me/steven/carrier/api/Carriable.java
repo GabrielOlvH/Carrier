@@ -17,9 +17,9 @@ public interface Carriable<T> {
     @NotNull
     T getParent();
     @NotNull
-    ActionResult tryPickup(@NotNull CarrierComponent carrier, @NotNull World world, @NotNull BlockPos blockPos, @Nullable Entity entity);
+    ActionResult tryPickup(@NotNull PlayerEntity player, @NotNull World world, @NotNull BlockPos blockPos, @Nullable Entity entity);
     @NotNull
-    ActionResult tryPlace(@NotNull CarrierComponent carrier, @NotNull World world, @NotNull CarriablePlacementContext ctx);
+    ActionResult tryPlace(@NotNull CarryingData data, @NotNull World world, @NotNull CarriablePlacementContext ctx);
 
     @Environment(EnvType.CLIENT)
     void render(@NotNull PlayerEntity player, @NotNull CarrierComponent carrier, @NotNull MatrixStack matrices, @NotNull VertexConsumerProvider vcp, float tickDelta, int light);

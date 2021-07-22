@@ -3,9 +3,11 @@ package me.steven.carrier.mixin;
 import me.steven.carrier.Carrier;
 import me.steven.carrier.api.CarrierComponent;
 import me.steven.carrier.api.CarryingData;
+import me.steven.carrier.api.DeathHandler;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.World;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -35,6 +37,13 @@ public abstract class MixinPlayerEntity extends LivingEntity  {
         CarryingData carrying = carrier.getCarryingData();
         if (carrying != null) {
             cir.setReturnValue(false);
+        }
+    }
+
+    @Inject(method = "dropInventory", at = @At("HEAD"))
+    private void carrier_onDropInventory(CallbackInfo ci) {
+        if (world instanceof ServerWorld serverWorld) {
+            DeathHandler.getDeathHandler(serverWorld).onDeath((PlayerEntity) (Object) this);
         }
     }
 }

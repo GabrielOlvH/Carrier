@@ -2,6 +2,7 @@ package me.steven.carrier;
 
 import me.steven.carrier.api.CarrierComponent;
 import me.steven.carrier.api.CarryingData;
+import me.steven.carrier.api.DeathHandler;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.entity.effect.StatusEffects;
@@ -12,6 +13,7 @@ public class ServerWorldTickCallback implements ServerTickEvents.EndWorldTick {
     @Override
     public void onEndTick(ServerWorld serverWorld) {
         for (ServerPlayerEntity player : serverWorld.getPlayers()) {
+            DeathHandler.getDeathHandler(serverWorld).tick(serverWorld);
             CarrierComponent carrier = Carrier.HOLDER.get(player);
             CarryingData carrying = carrier.getCarryingData();
             if (carrying != null) {

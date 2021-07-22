@@ -2,12 +2,15 @@ package me.steven.carrier.api;
 
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.DataResult;
+import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtElement;
 import net.minecraft.nbt.NbtOps;
 import net.minecraft.util.Identifier;
+import net.minecraft.util.math.BlockPos;
+import net.minecraft.world.World;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Optional;
@@ -49,7 +52,36 @@ public class CarryingData {
         return type;
     }
 
+    public <T> Carriable<T> getCarriable() {
+        return CarriableRegistry.INSTANCE.get(type);
+    }
+
     public BlockState getBlockState() {
         return blockState;
+    }
+
+    @Nullable
+    public BlockEntity createBlockEntity(World world, BlockPos pos) {
+        if (blockState.getBlock() instanceof BlockEntityProvider provider) {
+            BlockEntity blockEntity = provider.createBlockEntity(pos, blockState);
+            if (blockEntity != null) {
+                blockEntity.setWorld(world);
+                blockEntity.readNbt(getBlockEntityTag());
+                return blockEntity;
+            }
+        }
+        return null;
+    }
+
+    public NbtCompound writeNbt() {
+        NbtCompound nbt = new NbtCompound();
+        nbt.putString("type", type.toString());
+        nbt.put("carrying", tag);
+        return nbt;
+    }
+
+    public static CarryingData fromNbt(NbtCompound nbt) {
+        String type = nbt.getString("type");
+        return new CarryingData(new Identifier(type), nbt.getCompound("carrying"));
     }
 }
