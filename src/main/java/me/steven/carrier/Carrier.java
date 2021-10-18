@@ -177,7 +177,7 @@ public class Carrier implements ModInitializer, EntityComponentInitializer {
 
     private static void registerGenericCarriable(Block block, Identifier type) {
         if (block instanceof BlockEntityProvider) {
-            if (!CarriableRegistry.INSTANCE.contains(type)) {
+            if (!CarriableRegistry.INSTANCE.contains(block)) {
                 if (block instanceof AbstractChestBlock<?>)
                     CarriableRegistry.INSTANCE.register(type, new CarriableChest(type, block));
                 else if (block instanceof AbstractBannerBlock)
