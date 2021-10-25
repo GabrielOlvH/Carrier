@@ -35,8 +35,8 @@ public class MixinPlayerModel extends BipedEntityModel<PlayerEntity> {
             if (player.isSneaking()) pitch = 0.8f;
             rightArm.pitch = -pitch;
             leftArm.pitch = -pitch;
-            rightSleeve.pitch -= pitch;
-            leftSleeve.pitch -= pitch;
+            rightSleeve.pitch = -pitch;
+            leftSleeve.pitch = -pitch;
         }
     }
 }
