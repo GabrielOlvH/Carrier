@@ -20,7 +20,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class CarriableTurtle extends EntityCarriable<TurtleEntity> {
 
-    public static final Identifier TYPE = new Identifier("carrier", "turtle");
+    public static final Identifier TYPE = new Identifier("carrier", "minecraft_turtle");
     @Environment(EnvType.CLIENT)
     private static TurtleEntity dummyTurtle;
     @Environment(EnvType.CLIENT)

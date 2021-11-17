@@ -80,23 +80,24 @@ public class Carrier implements ModInitializer, EntityComponentInitializer {
         }
 
         ServerTickEvents.END_WORLD_TICK.register(new ServerWorldTickCallback());
-        CarriableRegistry.INSTANCE.register(new Identifier(MOD_ID, "cow"), new CarriableCow());
-        CarriableRegistry.INSTANCE.register(new Identifier(MOD_ID, "chicken"), new CarriableChicken());
-        CarriableRegistry.INSTANCE.register(new Identifier(MOD_ID, "parrot"), new CarriableParrot());
-        CarriableRegistry.INSTANCE.register(new Identifier(MOD_ID, "pig"), new CarriablePig());
-        CarriableRegistry.INSTANCE.register(new Identifier(MOD_ID, "rabbit"), new CarriableRabbit());
-        CarriableRegistry.INSTANCE.register(new Identifier(MOD_ID, "sheep"), new CarriableSheep());
-        CarriableRegistry.INSTANCE.register(new Identifier(MOD_ID, "turtle"), new CarriableTurtle());
-        CarriableRegistry.INSTANCE.register(new Identifier(MOD_ID, "wolf"), new CarriableWolf());
-        CarriableRegistry.INSTANCE.register(new Identifier(MOD_ID, "spawner"), new CarriableSpawner(new Identifier(MOD_ID, "spawner")));
-        CarriableRegistry.INSTANCE.register(new Identifier(MOD_ID, "enchanting_table"), new CarriableEnchantingTable(new Identifier(MOD_ID, "enchanting_table")));
+        CarriableRegistry.INSTANCE.register(new Identifier(MOD_ID, "minecraft_cow"), new CarriableCow());
+        CarriableRegistry.INSTANCE.register(new Identifier(MOD_ID, "minecraft_chicken"), new CarriableChicken());
+        CarriableRegistry.INSTANCE.register(new Identifier(MOD_ID, "minecraft_parrot"), new CarriableParrot());
+        CarriableRegistry.INSTANCE.register(new Identifier(MOD_ID, "minecraft_pig"), new CarriablePig());
+        CarriableRegistry.INSTANCE.register(new Identifier(MOD_ID, "minecraft_rabbit"), new CarriableRabbit());
+        CarriableRegistry.INSTANCE.register(new Identifier(MOD_ID, "minecraft_sheep"), new CarriableSheep());
+        CarriableRegistry.INSTANCE.register(new Identifier(MOD_ID, "minecraft_turtle"), new CarriableTurtle());
+        CarriableRegistry.INSTANCE.register(new Identifier(MOD_ID, "minecraft_wolf"), new CarriableWolf());
+        CarriableRegistry.INSTANCE.register(new Identifier(MOD_ID, "minecraft_spawner"), new CarriableSpawner(new Identifier(MOD_ID, "minecraft_spawner")));
+        CarriableRegistry.INSTANCE.register(new Identifier(MOD_ID, "minecraft_enchanting_table"), new CarriableEnchantingTable(new Identifier(MOD_ID, "minecraft_enchanting_table")));
 
         Registry.BLOCK.forEach((block) -> {
-            Identifier type = new Identifier("carrier", Registry.BLOCK.getId(block).getPath());
+            Identifier id = Registry.BLOCK.getId(block);
+            Identifier type = new Identifier("carrier", id.getNamespace() + "_" + id.getPath());
             registerGenericCarriable(block, type);
         });
         RegistryEntryAddedCallback.event(Registry.BLOCK).register((rawId, id, block) -> {
-            Identifier type = new Identifier("carrier", id.getPath());
+            Identifier type = new Identifier("carrier", id.getNamespace() + "_" + id.getPath());
             registerGenericCarriable(block, type);
         });
 

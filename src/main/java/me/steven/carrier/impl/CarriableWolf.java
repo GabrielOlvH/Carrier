@@ -20,7 +20,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class CarriableWolf extends EntityCarriable<WolfEntity> {
 
-    public static final Identifier TYPE = new Identifier("carrier", "wolf");
+    public static final Identifier TYPE = new Identifier("carrier", "minecraft_wolf");
     @Environment(EnvType.CLIENT)
     private static WolfEntity dummyWolf;
     @Environment(EnvType.CLIENT)

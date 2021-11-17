@@ -20,7 +20,7 @@ import org.jetbrains.annotations.NotNull;
 
 public class CarriableParrot extends EntityCarriable<ParrotEntity> {
 
-    public static final Identifier TYPE = new Identifier("carrier", "parrot");
+    public static final Identifier TYPE = new Identifier("carrier", "minecraft_parrot");
     @Environment(EnvType.CLIENT)
     private static ParrotEntity dummyParrot;
     @Environment(EnvType.CLIENT)
