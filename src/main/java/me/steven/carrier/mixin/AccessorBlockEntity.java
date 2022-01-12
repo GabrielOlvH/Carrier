@@ -12,5 +12,8 @@ public interface AccessorBlockEntity {
     @Accessor
     void setWorld(World world);
     @Invoker("writeIdentifyingData")
-    NbtCompound carrier_writeIdentifyingData(NbtCompound tag);
+    void carrier_writeIdentifyingData(NbtCompound tag);
+
+    @Invoker("writeNbt")
+    void carrier_writeNbt(NbtCompound tag);
 }

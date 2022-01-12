@@ -38,8 +38,8 @@
     ]
   },
   "depends": {
-    "fabricloader": ">=0.8.7",
+    "fabricloader": ">=0.10.0",
     "fabric": "*",
-    "minecraft": "1.17.x"
+    "minecraft": "1.18.x"
   }
 }

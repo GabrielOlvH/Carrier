@@ -53,7 +53,7 @@ public class CarriableBanner extends CarriableGeneric {
         BannerBlockEntity banner = getEntity();
         banner.getColorForState();
         ((AccessorBannerBlockEntity) banner).setPatternListTag(carrier.getCarryingData().getBlockEntityTag().getList("Patterns", 10));
-        ((AccessorBannerBlockEntity) banner).setPatternListTagRead(true);
+        //((AccessorBannerBlockEntity) banner).setPatternListTagRead(true);
         ((AccessorBannerBlockEntity) banner).setBaseColor(((AbstractBannerBlock) blockState.getBlock()).getColor());
         matrices.push();
         matrices.scale(0.6f, 0.6f, 0.6f);
