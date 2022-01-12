@@ -2,6 +2,7 @@ package me.steven.carrier.api;
 
 import com.mojang.datafixers.util.Pair;
 import com.mojang.serialization.DataResult;
+import me.steven.carrier.mixin.AccessorBlockEntity;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BlockEntity;
@@ -33,8 +34,11 @@ public class CarryingData {
         this.blockState = state;
         DataResult<NbtElement> result = BlockState.CODEC.encodeStart(NbtOps.INSTANCE, state);
         result.result().ifPresent((t) -> this.tag.put("blockState", t));
-        if (entity != null)
-            this.tag.put("blockEntity", entity.writeNbt(new NbtCompound()));
+        if (entity != null) {
+            NbtCompound nbt = new NbtCompound();
+            ((AccessorBlockEntity)entity).carrier_writeNbt(nbt);
+            this.tag.put("blockEntity", nbt);
+        }
     }
 
     public NbtCompound getTag() {

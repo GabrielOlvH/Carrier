@@ -65,7 +65,7 @@ public class MixinMinecraftClient {
 
     @Inject(
             method = "handleInputEvents",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/MinecraftClient;openScreen(Lnet/minecraft/client/gui/screen/Screen;)V"),
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/MinecraftClient;setScreen(Lnet/minecraft/client/gui/screen/Screen;)V"),
             slice = @Slice(from = @At(value = "FIELD", target = "Lnet/minecraft/client/options/GameOptions;keyInventory:Lnet/minecraft/client/options/KeyBinding;")),
             cancellable = true
     )

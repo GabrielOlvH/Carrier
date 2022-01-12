@@ -16,6 +16,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public class MixinAbstractBlock {
     @Inject(method = "onUse", at = @At("INVOKE"), cancellable = true)
     private void carrier_interactBlock(World world, PlayerEntity player, Hand hand, BlockHitResult hit, CallbackInfoReturnable<ActionResult> cir) {
+        if(player == null) return;
         ActionResult actionResult = HolderInteractCallback.INSTANCE.interact(player, world, hand, hit);
         if (actionResult.isAccepted()) cir.setReturnValue(actionResult);
     }

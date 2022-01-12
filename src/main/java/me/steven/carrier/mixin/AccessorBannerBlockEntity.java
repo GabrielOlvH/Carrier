@@ -10,8 +10,8 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 public interface AccessorBannerBlockEntity {
     @Accessor
     void setPatternListTag(NbtList listTag);
-    @Accessor
-    void setPatternListTagRead(boolean read);
+    //@Accessor
+   // void setPatternListTagRead(boolean read);
     @Accessor
     void setBaseColor(DyeColor color);
 }
