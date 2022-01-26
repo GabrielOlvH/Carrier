@@ -6,7 +6,6 @@ import dev.onyxstudios.cca.api.v3.entity.EntityComponentFactoryRegistry;
 import dev.onyxstudios.cca.api.v3.entity.EntityComponentInitializer;
 import dev.onyxstudios.cca.api.v3.entity.RespawnCopyStrategy;
 import me.steven.carrier.api.*;
-import me.steven.carrier.api.event.RegisterCarriableCallback;
 import me.steven.carrier.impl.EntityCarriable;
 import me.steven.carrier.impl.blocks.*;
 import me.steven.carrier.items.GloveItem;
@@ -21,7 +20,6 @@ import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
 import net.minecraft.block.AbstractBannerBlock;
 import net.minecraft.block.AbstractChestBlock;
 import net.minecraft.block.Block;
-import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
@@ -51,23 +49,25 @@ public class Carrier implements ModInitializer, EntityComponentInitializer {
 
 
         Registry.ENTITY_TYPE.forEach((entityType) -> {
-            Identifier type = new Identifier("carrier", Registry.ENTITY_TYPE.getId(entityType).getPath());
-            registerGenericCarriable(entityType, type);
+            Identifier id = Registry.ENTITY_TYPE.getId(entityType);
+            Identifier type = new Identifier("carrier", id.getNamespace() + "_" + id.getPath());
+            register(entityType, type);
         });
 
         RegistryEntryAddedCallback.event(Registry.ENTITY_TYPE).register((rawId, id, entityType) -> {
-            Identifier type = new Identifier("carrier", id.getPath());
-            registerGenericCarriable(entityType, type);
+            Identifier type = new Identifier("carrier", id.getNamespace() + "_" + id.getPath());
+            register(entityType, type);
         });
 
         Registry.BLOCK.forEach((block) -> {
-            Identifier type = new Identifier("carrier", Registry.BLOCK.getId(block).getPath());
-            registerGenericCarriable(block, type);
+            Identifier id = Registry.BLOCK.getId(block);
+            Identifier type = new Identifier("carrier", id.getNamespace() + "_" + id.getPath());
+            register(block, type);
         });
 
         RegistryEntryAddedCallback.event(Registry.BLOCK).register((rawId, id, block) -> {
-            Identifier type = new Identifier("carrier", id.getPath());
-            registerGenericCarriable(block, type);
+            Identifier type = new Identifier("carrier", id.getNamespace() + "_" + id.getPath());
+            register(block, type);
         });
 
         Registry.register(Registry.ITEM, new Identifier(MOD_ID, "glove"), ITEM_GLOVE);
@@ -108,12 +108,9 @@ public class Carrier implements ModInitializer, EntityComponentInitializer {
         return playerEntity instanceof CarrierPlayerExtension && ((CarrierPlayerExtension) playerEntity).canCarry();
     }
 
-    private static void registerGenericCarriable(Block block, Identifier type) {
-        if (block instanceof BlockEntityProvider) {
-            Carriable<?> carriable = RegisterCarriableCallback.BLOCK_EVENT.invoker().register(block);
-            if (carriable != null)
-                CarriableRegistry.INSTANCE.register(type, carriable);
-            else if (block instanceof AbstractChestBlock<?> chest)
+    private static void register(Block block, Identifier type) {
+        if (!CarriableRegistry.INSTANCE.contains(block)) {
+            if (block instanceof AbstractChestBlock<?> chest)
                 CarriableRegistry.INSTANCE.register(type, new CarriableChest(type, chest));
             else if (block instanceof AbstractBannerBlock banner)
                 CarriableRegistry.INSTANCE.register(type, new CarriableBanner(type, banner));
@@ -122,11 +119,8 @@ public class Carrier implements ModInitializer, EntityComponentInitializer {
         }
     }
 
-    private static void registerGenericCarriable(EntityType<?> entityType, Identifier type) {
-        Carriable<?> carriable = RegisterCarriableCallback.ENTITY_EVENT.invoker().register(entityType);
-        if (carriable != null)
-            CarriableRegistry.INSTANCE.register(type, carriable);
-        else
+    private static void register(EntityType<?> entityType, Identifier type) {
+        if (!CarriableRegistry.INSTANCE.contains(entityType))
             CarriableRegistry.INSTANCE.register(type, new EntityCarriable<>(type, entityType));
     }
 }

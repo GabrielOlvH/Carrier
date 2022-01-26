@@ -44,7 +44,6 @@ public class CarriableBanner extends BaseCarriableBlock<AbstractBannerBlock> {
             BlockState blockState = getParent().getDefaultState();
             banner.getColorForState();
             ((AccessorBannerBlockEntity) banner).setPatternListTag(carrier.getCarryingData().getBlockEntityTag().getList("Patterns", 10));
-            ((AccessorBannerBlockEntity) banner).setPatternListTagRead(true);
             ((AccessorBannerBlockEntity) banner).setBaseColor(((AbstractBannerBlock) blockState.getBlock()).getColor());
         }
     }
