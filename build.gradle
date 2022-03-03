@@ -20,7 +20,7 @@ repositories {
     }
     maven {
         name = "ARRP"
-        url = "https://raw.githubusercontent.com/Devan-Kerman/Devan-Repo/master/"
+        url = uri("https://storage.googleapis.com/devan-maven/")
         content {
             includeGroup "net.devtech"
         }
@@ -40,8 +40,8 @@ dependencies {
     include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-base:${project.cardinal_components}"
     modImplementation "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-entity:${project.cardinal_components}"
     include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-entity:${project.cardinal_components}"
-    modImplementation "net.devtech:arrp:0.2.9"
-    include "net.devtech:arrp:0.2.9"
+    modImplementation "net.devtech:arrp:0.5.5"
+    include "net.devtech:arrp:0.5.5"
 }
 
 processResources {

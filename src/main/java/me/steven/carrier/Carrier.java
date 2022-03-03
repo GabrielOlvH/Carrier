@@ -19,7 +19,6 @@ import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.registry.RegistryEntryAddedCallback;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
 import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
-import net.fabricmc.fabric.api.tag.TagFactory;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.AbstractBannerBlock;
 import net.minecraft.block.AbstractChestBlock;
@@ -33,6 +32,7 @@ import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.tag.Tag;
+import net.minecraft.tag.TagKey;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.LiteralText;
 import net.minecraft.text.Style;
@@ -59,7 +59,7 @@ public class Carrier implements ModInitializer, EntityComponentInitializer {
 
     public static final Identifier SET_CAN_CARRY_PACKET = new Identifier(MOD_ID, "can_carry_packet");
 
-    public static final Tag<Block> BLACKLIST = TagFactory.BLOCK.create(new Identifier(MOD_ID, "blacklist"));
+    public static final TagKey<Block> BLACKLIST = TagKey.of(Registry.BLOCK_KEY, new Identifier(MOD_ID, "blacklist"));
 
     @Override
     public void onInitialize() {
@@ -172,7 +172,7 @@ public class Carrier implements ModInitializer, EntityComponentInitializer {
     }
 
     public static boolean canCarry(Identifier id) {
-        if (Registry.BLOCK.getOrEmpty(id).stream().anyMatch(BLACKLIST::contains)) return false;
+        if (Registry.BLOCK.getOrEmpty(id).map((b) -> b.getRegistryEntry().isIn(BLACKLIST)).orElse(false)) return false;
 
         if (CONFIG.getType() == Config.ListType.WHITELIST) return CONFIG.getList().stream().anyMatch((s) -> Pattern.compile(s).matcher(id.toString()).find());
         else return CONFIG.getList().stream().noneMatch((s) -> Pattern.compile(s).matcher(id.toString()).find());
