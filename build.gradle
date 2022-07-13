@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version '0.10-SNAPSHOT'
+    id 'fabric-loom' version '0.12-SNAPSHOT'
     id 'maven-publish'
 }
 
@@ -12,11 +12,8 @@ group = project.maven_group
 
 repositories {
     maven {
-        name = "Ladysnake Libs"
-        url = "https://ladysnake.jfrog.io/artifactory/mods"
-        content {
-            includeGroup "io.github.onyxstudios.Cardinal-Components-API"
-        }
+        name = 'Ladysnake Mods'
+        url = 'https://ladysnake.jfrog.io/artifactory/mods'
     }
     maven {
         name = "ARRP"
@@ -36,10 +33,10 @@ dependencies {
     // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-    modImplementation "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-base:${project.cardinal_components}"
-    include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-base:${project.cardinal_components}"
-    modImplementation "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-entity:${project.cardinal_components}"
-    include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-entity:${project.cardinal_components}"
+    modImplementation "dev.onyxstudios.cardinal-components-api:cardinal-components-base:${project.cardinal_components}"
+    include "dev.onyxstudios.cardinal-components-api:cardinal-components-base:${project.cardinal_components}"
+    modImplementation "dev.onyxstudios.cardinal-components-api:cardinal-components-entity:${project.cardinal_components}"
+    include "dev.onyxstudios.cardinal-components-api:cardinal-components-entity:${project.cardinal_components}"
     modImplementation "net.devtech:arrp:0.5.5"
     include "net.devtech:arrp:0.5.5"
 }
