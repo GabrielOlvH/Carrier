@@ -21,8 +21,8 @@ import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
+import net.minecraft.util.math.RotationAxis;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3f;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 
@@ -57,7 +57,7 @@ public class CarriableChest extends CarriableGeneric {
         matrices.push();
         matrices.scale(0.6f, 0.6f, 0.6f);
         float yaw = MathHelper.lerpAngleDegrees(tickDelta, player.prevBodyYaw, player.bodyYaw);
-        matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-yaw));
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-yaw));
         matrices.translate(-0.5, 0.8, 0.2);
         MinecraftClient.getInstance().getBlockRenderManager().renderBlockAsEntity(blockState, matrices, vcp, light, OverlayTexture.DEFAULT_UV);
         matrices.pop();

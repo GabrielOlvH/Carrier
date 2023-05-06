@@ -18,6 +18,7 @@ import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.registry.RegistryEntryAddedCallback;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
+import net.fabricmc.fabric.api.itemgroup.v1.ItemGroupEvents;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.block.AbstractBannerBlock;
@@ -26,18 +27,19 @@ import net.minecraft.block.Block;
 import net.minecraft.block.BlockEntityProvider;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
-import net.minecraft.item.ItemGroup;
+import net.minecraft.item.ItemGroups;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
+import net.minecraft.registry.tag.TagKey;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.tag.TagKey;
 import net.minecraft.text.ClickEvent;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
-import net.minecraft.util.registry.Registry;
 import org.apache.commons.io.FileUtils;
 import org.apache.logging.log4j.LogManager;
 
@@ -54,11 +56,11 @@ public class Carrier implements ModInitializer, EntityComponentInitializer {
 
     public static Config CONFIG = new Config();
 
-    public static final Item ITEM_GLOVE = new GloveItem(new FabricItemSettings().group(ItemGroup.TOOLS).maxCount(1));
+    public static final Item ITEM_GLOVE = new GloveItem(new FabricItemSettings().maxCount(1));
 
     public static final Identifier SET_CAN_CARRY_PACKET = new Identifier(MOD_ID, "can_carry_packet");
 
-    public static final TagKey<Block> BLACKLIST = TagKey.of(Registry.BLOCK_KEY, new Identifier(MOD_ID, "blacklist"));
+    public static final TagKey<Block> BLACKLIST = TagKey.of(Registries.BLOCK.getKey(), new Identifier(MOD_ID, "blacklist"));
 
     @Override
     public void onInitialize() {
@@ -94,17 +96,17 @@ public class Carrier implements ModInitializer, EntityComponentInitializer {
         CarriableRegistry.INSTANCE.register(new Identifier(MOD_ID, "minecraft_spawner"), new CarriableSpawner(new Identifier(MOD_ID, "minecraft_spawner")));
         CarriableRegistry.INSTANCE.register(new Identifier(MOD_ID, "minecraft_enchanting_table"), new CarriableEnchantingTable(new Identifier(MOD_ID, "minecraft_enchanting_table")));
 
-        Registry.BLOCK.forEach((block) -> {
-            Identifier id = Registry.BLOCK.getId(block);
+        Registries.BLOCK.forEach((block) -> {
+            Identifier id = Registries.BLOCK.getId(block);
             Identifier type = new Identifier("carrier", id.getNamespace() + "_" + id.getPath());
             registerGenericCarriable(block, type);
         });
-        RegistryEntryAddedCallback.event(Registry.BLOCK).register((rawId, id, block) -> {
+        RegistryEntryAddedCallback.event(Registries.BLOCK).register((rawId, id, block) -> {
             Identifier type = new Identifier("carrier", id.getNamespace() + "_" + id.getPath());
             registerGenericCarriable(block, type);
         });
 
-        Registry.register(Registry.ITEM, new Identifier(MOD_ID, "glove"), ITEM_GLOVE);
+        Registry.register(Registries.ITEM, new Identifier(MOD_ID, "glove"), ITEM_GLOVE);
 
         if (CONFIG.doGlovesExist()) {
             RuntimeResourcePack resourcePack = RuntimeResourcePack.create(MOD_ID + ":gloves");
@@ -116,6 +118,7 @@ public class Carrier implements ModInitializer, EntityComponentInitializer {
                     )
             );
             RRPCallback.EVENT.register(packs -> packs.add(resourcePack));
+            ItemGroupEvents.modifyEntriesEvent(ItemGroups.TOOLS).register((content) -> content.add(ITEM_GLOVE));
         }
 
         ServerPlayNetworking.registerGlobalReceiver(SET_CAN_CARRY_PACKET, (server, player, handler, buf, responseSender) -> {
@@ -171,7 +174,7 @@ public class Carrier implements ModInitializer, EntityComponentInitializer {
     }
 
     public static boolean canCarry(Identifier id) {
-        if (Registry.BLOCK.getOrEmpty(id).map((b) -> b.getRegistryEntry().isIn(BLACKLIST)).orElse(false)) return false;
+        if (Registries.BLOCK.getOrEmpty(id).map((b) -> b.getRegistryEntry().isIn(BLACKLIST)).orElse(false)) return false;
 
         if (CONFIG.getType() == Config.ListType.WHITELIST) return CONFIG.getList().stream().anyMatch((s) -> Pattern.compile(s).matcher(id.toString()).find());
         else return CONFIG.getList().stream().noneMatch((s) -> Pattern.compile(s).matcher(id.toString()).find());

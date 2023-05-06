@@ -18,7 +18,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.RotationAxis;
 import org.jetbrains.annotations.NotNull;
 
 public class CarriableBanner extends CarriableGeneric {
@@ -56,7 +56,7 @@ public class CarriableBanner extends CarriableGeneric {
         matrices.push();
         matrices.scale(0.6f, 0.6f, 0.6f);
         float yaw = MathHelper.lerpAngleDegrees(tickDelta, player.prevBodyYaw, player.bodyYaw);
-        matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-yaw));
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-yaw));
         matrices.translate(-0.5, 0.4, -0.05);
         MinecraftClient.getInstance().getBlockRenderManager().renderBlockAsEntity(blockState, matrices, vcp, light, OverlayTexture.DEFAULT_UV);
         if (MinecraftClient.isFancyGraphicsOrBetter())

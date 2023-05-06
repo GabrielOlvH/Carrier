@@ -17,7 +17,7 @@ repositories {
     }
     maven {
         name = "ARRP"
-        url = uri("https://storage.googleapis.com/devan-maven/")
+        url = uri("https://ueaj.dev/maven")
         content {
             includeGroup "net.devtech"
         }
@@ -37,8 +37,8 @@ dependencies {
     include "dev.onyxstudios.cardinal-components-api:cardinal-components-base:${project.cardinal_components}"
     modImplementation "dev.onyxstudios.cardinal-components-api:cardinal-components-entity:${project.cardinal_components}"
     include "dev.onyxstudios.cardinal-components-api:cardinal-components-entity:${project.cardinal_components}"
-    modImplementation "net.devtech:arrp:0.5.5"
-    include "net.devtech:arrp:0.5.5"
+    modImplementation "net.devtech:arrp:0.6.7"
+    include "net.devtech:arrp:0.6.7"
 }
 
 processResources {

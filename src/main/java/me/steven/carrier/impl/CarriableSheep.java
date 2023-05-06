@@ -15,7 +15,7 @@ import net.minecraft.entity.passive.SheepEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.RotationAxis;
 import org.jetbrains.annotations.NotNull;
 
 public class CarriableSheep extends EntityCarriable<SheepEntity> {
@@ -60,7 +60,7 @@ public class CarriableSheep extends EntityCarriable<SheepEntity> {
         matrices.push();
         matrices.scale(0.6f, 0.6f, 0.6f);
         float yaw = MathHelper.lerpAngleDegrees(tickDelta, player.prevBodyYaw, player.bodyYaw);
-        matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-yaw + 90));
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-yaw + 90));
         matrices.translate(-0.6, 0.8, -0.1);
         getEntityRenderer().render(getEntity(), 0, tickDelta, matrices, vcp, light);
         matrices.pop();
