@@ -21,7 +21,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.RotationAxis;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -74,7 +74,7 @@ public class EntityCarriable<T extends Entity> implements Carriable<EntityType<T
     public void render(@NotNull PlayerEntity player, @NotNull CarrierComponent carrier, @NotNull MatrixStack matrices, @NotNull VertexConsumerProvider vcp, float tickDelta, int light) {
         matrices.push();
         CarryingData data = carrier.getCarryingData();
-        T entity = entityType.create(player.world);
+        T entity = entityType.create(player.getWorld());
         if (data != null && entity != null) {
             setupRenderEntity(entity, data, player, carrier, matrices, vcp, tickDelta, light);
             EntityRenderDispatcher dispatcher = MinecraftClient.getInstance().getEntityRenderDispatcher();
@@ -121,7 +121,7 @@ public class EntityCarriable<T extends Entity> implements Carriable<EntityType<T
         matrices.scale((float)(width/entity.getBoundingBox().getXLength()), (float)(width/entity.getBoundingBox().getXLength()), (float)(width/entity.getBoundingBox().getXLength()));
 
         float yaw = MathHelper.lerpAngleDegrees(tickDelta, player.prevBodyYaw, player.bodyYaw);
-        matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-yaw + 90));
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-yaw + 90));
         matrices.translate(-1.4+((0.6*width)/0.6)/0.6, 1.6-height, 0.0);
         matrices.translate(depth - 0.2, 0.0, 0.0);
     }

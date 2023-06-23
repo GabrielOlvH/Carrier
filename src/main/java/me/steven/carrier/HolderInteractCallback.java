@@ -9,13 +9,13 @@ import net.minecraft.entity.Entity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemUsageContext;
 import net.minecraft.nbt.NbtCompound;
+import net.minecraft.registry.Registries;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
-import net.minecraft.util.registry.Registry;
 import net.minecraft.world.World;
 
 public class HolderInteractCallback {
@@ -33,7 +33,7 @@ public class HolderInteractCallback {
         CarrierComponent carrier = Carrier.HOLDER.get(player);
         CarryingData carrying = carrier.getCarryingData();
         if (canPickup && carrying == null && CarriableRegistry.INSTANCE.contains(block) && blockState.getHardness(world, pos) > -1) {
-            Identifier id = Registry.BLOCK.getId(block);
+            Identifier id = Registries.BLOCK.getId(block);
             if (world.isClient && !Carrier.canCarry(id)) return ActionResult.CONSUME;
             Carriable<?> carriable = CarriableRegistry.INSTANCE.get(block);
             if (world.canPlayerModifyAt(player, pos) && carriable != null && Carrier.canCarry(id)) {
@@ -48,7 +48,7 @@ public class HolderInteractCallback {
 
         if (carrying != null) {
             Carriable<?> carriable = CarriableRegistry.INSTANCE.get(carrying.getType());
-            if (!world.isClient && carriable != null && world.getBlockState(pos.offset(hitDirection)).getMaterial().isReplaceable()) {
+            if (!world.isClient && carriable != null && world.getBlockState(pos.offset(hitDirection)).isReplaceable()) {
                 ActionResult actionResult = carriable.tryPlace(carrying, world, new CarriablePlacementContext(carriable, pos.offset(hitDirection), hitDirection, player.getHorizontalFacing(), player.isSneaking()));
                 if (actionResult.isAccepted()) {
                     carrier.setCarryingData(null);
@@ -66,7 +66,7 @@ public class HolderInteractCallback {
         CarrierComponent carrier = Carrier.HOLDER.get(player);
         CarryingData carrying = carrier.getCarryingData();
         if (canPickup && carrying == null && CarriableRegistry.INSTANCE.contains(entity.getType())) {
-            Identifier id = Registry.ENTITY_TYPE.getId(entity.getType());
+            Identifier id = Registries.ENTITY_TYPE.getId(entity.getType());
             if (world.isClient && !Carrier.canCarry(id)) return ActionResult.CONSUME;
             Carriable<?> carriable = CarriableRegistry.INSTANCE.get(entity.getType());
             if (world.canPlayerModifyAt(player, pos) && carriable != null && Carrier.canCarry(id)) {

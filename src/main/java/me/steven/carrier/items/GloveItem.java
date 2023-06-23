@@ -22,7 +22,7 @@ public class GloveItem extends Item {
 
     @Override
     public ActionResult useOnEntity(ItemStack stack, PlayerEntity player, LivingEntity entity, Hand hand) {
-        return HolderInteractCallback.INSTANCE.interact(player, player.world, hand, entity, true);
+        return HolderInteractCallback.INSTANCE.interact(player, player.getWorld(), hand, entity, true);
     }
 
     @Override

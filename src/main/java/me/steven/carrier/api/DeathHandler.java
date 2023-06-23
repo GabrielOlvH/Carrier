@@ -2,6 +2,7 @@ package me.steven.carrier.api;
 
 import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import me.steven.carrier.Carrier;
+import me.steven.carrier.Config;
 import me.steven.carrier.DeathCarryingData;
 import net.minecraft.block.BlockState;
 import net.minecraft.entity.player.PlayerEntity;
@@ -30,10 +31,10 @@ public class DeathHandler extends PersistentState {
     public void onDeath(PlayerEntity player) {
         CarrierComponent component = Carrier.HOLDER.get(player);
         CarryingData carryingData = component.getCarryingData();
-        if (carryingData != null) {
+        if (carryingData != null && !Carrier.CONFIG.shouldKeepCarryingOnDeath()) {
             deathsToPlace.put(player.getUuid(), new DeathCarryingData(carryingData, player.getBlockPos()));
             component.setCarryingData(null);
-            LOGGER.info("{} has died at {}, attempting to place carrying object...", player.getDisplayName().asString(), player.getBlockPos());
+            LOGGER.info("{} has died at {}, attempting to place carrying object...", player.getDisplayName().getString(), player.getBlockPos());
         }
     }
 
@@ -61,10 +62,9 @@ public class DeathHandler extends PersistentState {
     }
 
     private boolean tryPlace(ServerWorld world, DeathCarryingData data, BlockPos pos, int attempt, LongOpenHashSet blocksSearched) {
-        if (!blocksSearched.add(pos.asLong()) || blocksSearched.size() > attempt * 5) return false;
-
+        if (!blocksSearched.add(pos.asLong()) || blocksSearched.size() > attempt * 5 || !world.isInBuildLimit(pos)) return false;
         BlockState blockState = world.getBlockState(pos);
-        if (blockState.getMaterial().isReplaceable()) {
+        if (blockState.isReplaceable()) {
             Carriable<?> carriable = CarriableRegistry.INSTANCE.get(data.getData().getType());
             ActionResult result = carriable.tryPlace(data.getData(), world, new CarriablePlacementContext(data.getData().getCarriable(), pos, Direction.UP, Direction.NORTH, false));
             if (result.isAccepted()) {

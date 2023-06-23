@@ -42,7 +42,7 @@ public abstract class MixinPlayerEntity extends LivingEntity  {
 
     @Inject(method = "dropInventory", at = @At("HEAD"))
     private void carrier_onDropInventory(CallbackInfo ci) {
-        if (world instanceof ServerWorld serverWorld) {
+        if (getWorld() instanceof ServerWorld serverWorld) {
             DeathHandler.getDeathHandler(serverWorld).onDeath((PlayerEntity) (Object) this);
         }
     }

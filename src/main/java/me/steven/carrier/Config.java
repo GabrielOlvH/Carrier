@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @SuppressWarnings({"FieldMayBeFinal", "FieldCanBeLocal"})
@@ -17,8 +18,57 @@ public class Config {
     private boolean enableGloves = false;
     private int slownessLevel = 2;
     private float hungerExhaustion = 0.05f;
-    private ListType type = ListType.BLACKLIST;
-    private List<String> list = new ArrayList<>();
+    private boolean keepCarryingOnDeath = false;
+    private ListType type = ListType.WHITELIST;
+    private List<String> list = Arrays.asList(
+            "minecraft:bat",
+            "minecraft:cat",
+            "minecraft:chicken",
+            "minecraft:cod",
+            "minecraft:cow",
+            "minecraft:dolphin",
+            "minecraft:donkey",
+            "minecraft:fox",
+            "minecraft:horse",
+            "minecraft:mooshroom",
+            "minecraft:mule",
+            "minecraft:ocelot",
+            "minecraft:panda",
+            "minecraft:parrot",
+            "minecraft:pig",
+            "minecraft:pufferfish",
+            "minecraft:rabbit",
+            "minecraft:salmon",
+            "minecraft:sheep",
+            "minecraft:skeleton_horse",
+            "minecraft:squid",
+            "minecraft:strider",
+            "minecraft:tropical_fish",
+            "minecraft:turtle",
+            "minecraft:villager",
+            "minecraft:wandering_trader",
+            "minecraft:wolf",
+            "minecraft:barrel",
+            "minecraft:beehive",
+            "minecraft:bell",
+            "minecraft:blast_furnace",
+            "minecraft:brewing_stand",
+            "minecraft:campfire",
+            "minecraft:chest",
+            "minecraft:comparator",
+            "minecraft:daylight_detector",
+            "minecraft:dispenser",
+            "minecraft:dropper",
+            "minecraft:enchanting_table",
+            "minecraft:ender_chest",
+            "minecraft:furnace",
+            "minecraft:hopper",
+            "minecraft:jukebox",
+            "minecraft:lectern",
+            "minecraft:note_block",
+            "minecraft:shulker_box",
+            "minecraft:smoker"
+    );
 
     public Config() {}
 
@@ -32,6 +82,10 @@ public class Config {
 
     public float getHungerExhaustion() {
         return hungerExhaustion;
+    }
+
+    public boolean shouldKeepCarryingOnDeath() {
+        return keepCarryingOnDeath;
     }
 
     public boolean doGlovesExist() { return enableGloves; }

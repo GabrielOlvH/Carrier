@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version '0.10-SNAPSHOT'
+    id 'fabric-loom' version '1.2-SNAPSHOT'
     id 'maven-publish'
 }
 
@@ -12,15 +12,15 @@ group = project.maven_group
 
 repositories {
     maven {
-        name = "Ladysnake Libs"
-        url = "https://ladysnake.jfrog.io/artifactory/mods"
+        name = 'Ladysnake Mods'
+        url = 'https://maven.ladysnake.org/releases'
         content {
-            includeGroup "io.github.onyxstudios.Cardinal-Components-API"
+            includeGroup "dev.onyxstudios.cardinal-components-api"
         }
     }
     maven {
         name = "ARRP"
-        url = "https://raw.githubusercontent.com/Devan-Kerman/Devan-Repo/master/"
+        url = uri("https://ueaj.dev/maven")
         content {
             includeGroup "net.devtech"
         }
@@ -36,12 +36,12 @@ dependencies {
     // Fabric API. This is technically optional, but you probably want it anyway.
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 
-    modImplementation "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-base:${project.cardinal_components}"
-    include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-base:${project.cardinal_components}"
-    modImplementation "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-entity:${project.cardinal_components}"
-    include "io.github.onyxstudios.Cardinal-Components-API:cardinal-components-entity:${project.cardinal_components}"
-    modImplementation "net.devtech:arrp:0.2.9"
-    include "net.devtech:arrp:0.2.9"
+    modImplementation "dev.onyxstudios.cardinal-components-api:cardinal-components-base:${project.cardinal_components}"
+    include "dev.onyxstudios.cardinal-components-api:cardinal-components-base:${project.cardinal_components}"
+    modImplementation "dev.onyxstudios.cardinal-components-api:cardinal-components-entity:${project.cardinal_components}"
+    include "dev.onyxstudios.cardinal-components-api:cardinal-components-entity:${project.cardinal_components}"
+    modImplementation "net.devtech:arrp:0.6.7"
+    include "net.devtech:arrp:0.6.7"
 }
 
 processResources {

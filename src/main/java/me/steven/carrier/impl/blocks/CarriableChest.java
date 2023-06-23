@@ -34,8 +34,9 @@ public class CarriableChest extends BaseCarriableBlock<AbstractChestBlock<?>> {
     public BlockState getBlockStateToPlace(@NotNull CarryingData data, @NotNull World world, @NotNull CarriablePlacementContext ctx) {
         BlockPos pos = ctx.getBlockPos();
         return parent.getPlacementState(new ItemPlacementContext(world, null, Hand.MAIN_HAND, ItemStack.EMPTY, new BlockHitResult(new Vec3d(pos.getX(), pos.getY(), pos.getZ()), ctx.getSide(), ctx.getBlockPos(), false)){
+
             @Override
-            public Direction getPlayerFacing() {
+            public Direction getHorizontalPlayerFacing() {
                 return ctx.getPlayerLook();
             }
 

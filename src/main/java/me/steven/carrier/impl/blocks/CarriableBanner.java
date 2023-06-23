@@ -20,7 +20,7 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.RotationAxis;
 import org.jetbrains.annotations.NotNull;
 
 public class CarriableBanner extends BaseCarriableBlock<AbstractBannerBlock> {
@@ -33,8 +33,8 @@ public class CarriableBanner extends BaseCarriableBlock<AbstractBannerBlock> {
     public void setupRender(@NotNull PlayerEntity player, @NotNull CarrierComponent carrier, @NotNull MatrixStack matrices, @NotNull VertexConsumerProvider vcp, float tickDelta, int light) {
         float yaw = MathHelper.lerpAngleDegrees(tickDelta, player.prevBodyYaw, player.bodyYaw);
         matrices.scale(0.6f, 0.6f, 0.6f);
-        matrices.multiply(Vec3f.NEGATIVE_Y.getDegreesQuaternion(180));
-        matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-yaw));
+        matrices.multiply(RotationAxis.NEGATIVE_Y.rotationDegrees(180));
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-yaw));
         matrices.translate(-0.5, 0.4, -0.05);
     }
 

@@ -20,7 +20,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.MathHelper;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.RotationAxis;
 import net.minecraft.world.World;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -80,7 +80,7 @@ public class BaseCarriableBlock<T extends Block> implements Carriable<T> {
             MinecraftClient client = MinecraftClient.getInstance();
             if (blockState.getRenderType() == BlockRenderType.MODEL)
                 client.getBlockRenderManager().renderBlockAsEntity(blockState, matrices, vcp, light, OverlayTexture.DEFAULT_UV);
-            BlockEntity blockEntity = carrier.getCarryingData().createBlockEntity(player.world, player.getBlockPos());
+            BlockEntity blockEntity = carrier.getCarryingData().createBlockEntity(player.getWorld(), player.getBlockPos());
             if (blockEntity != null) {
                 setupRenderBlockEntity(player, carrier, matrices, vcp, tickDelta, light, blockEntity);
                 client.getBlockEntityRenderDispatcher().render(blockEntity, tickDelta, matrices, vcp);
@@ -95,8 +95,8 @@ public class BaseCarriableBlock<T extends Block> implements Carriable<T> {
     public void setupRender(@NotNull PlayerEntity player, @NotNull CarrierComponent carrier, @NotNull MatrixStack matrices, @NotNull VertexConsumerProvider vcp, float tickDelta, int light) {
         float yaw = MathHelper.lerpAngleDegrees(tickDelta, player.prevBodyYaw, player.bodyYaw);
         matrices.scale(0.6f, 0.6f, 0.6f);
-        matrices.multiply(Vec3f.NEGATIVE_Y.getDegreesQuaternion(180));
-        matrices.multiply(Vec3f.POSITIVE_Y.getDegreesQuaternion(-yaw));
+        matrices.multiply(RotationAxis.NEGATIVE_Y.rotationDegrees(180));
+        matrices.multiply(RotationAxis.POSITIVE_Y.rotationDegrees(-yaw));
         matrices.translate(-0.5, 0.8, -1.3);
     }
 

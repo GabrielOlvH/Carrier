@@ -24,7 +24,7 @@ public class MixinMinecraftClient {
 
     @Inject(
             method = "handleInputEvents",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/MinecraftClient;doAttack()V"),
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/MinecraftClient;doAttack()Z"),
             cancellable = true
     )
     private void carrier_cancelPunch(CallbackInfo ci) {
@@ -54,8 +54,8 @@ public class MixinMinecraftClient {
 
     @Inject(
             method = "handleInputEvents",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayNetworkHandler;sendPacket(Lnet/minecraft/network/Packet;)V"),
-            slice = @Slice(from = @At(value = "FIELD",target = "Lnet/minecraft/client/options/GameOptions;keySwapHands:Lnet/minecraft/client/options/KeyBinding;")),
+            at = @At(value = "INVOKE", target = "Lnet/minecraft/client/network/ClientPlayNetworkHandler;sendPacket(Lnet/minecraft/network/packet/Packet;)V"),
+            slice = @Slice(from = @At(value = "FIELD",target = "Lnet/minecraft/client/option/GameOptions;swapHandsKey:Lnet/minecraft/client/option/KeyBinding;")),
             cancellable = true
     )
     private void carrier_cancelHandSwap(CallbackInfo ci) {
@@ -66,7 +66,7 @@ public class MixinMinecraftClient {
     @Inject(
             method = "handleInputEvents",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/client/MinecraftClient;setScreen(Lnet/minecraft/client/gui/screen/Screen;)V"),
-            slice = @Slice(from = @At(value = "FIELD", target = "Lnet/minecraft/client/options/GameOptions;keyInventory:Lnet/minecraft/client/options/KeyBinding;")),
+            slice = @Slice(from = @At(value = "FIELD", target = "Lnet/minecraft/client/option/GameOptions;inventoryKey:Lnet/minecraft/client/option/KeyBinding;")),
             cancellable = true
     )
     private void carrier_cancelOpenInventory(CallbackInfo ci) {

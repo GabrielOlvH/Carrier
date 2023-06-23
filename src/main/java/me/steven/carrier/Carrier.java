@@ -16,7 +16,7 @@ import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.fabric.api.event.registry.RegistryEntryAddedCallback;
 import net.fabricmc.fabric.api.item.v1.FabricItemSettings;
-import net.fabricmc.fabric.api.network.ServerSidePacketRegistry;
+import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.block.AbstractBannerBlock;
 import net.minecraft.block.AbstractChestBlock;
 import net.minecraft.block.Block;
@@ -24,8 +24,9 @@ import net.minecraft.entity.EntityType;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemGroup;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.Registry;
 import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
 
 import java.util.regex.Pattern;
 
@@ -37,7 +38,7 @@ public class Carrier implements ModInitializer, EntityComponentInitializer {
 
     public static Config CONFIG = new Config();
 
-    public static final Item ITEM_GLOVE = new GloveItem(new FabricItemSettings().group(ItemGroup.TOOLS).maxCount(1));
+    public static final Item ITEM_GLOVE = new GloveItem(new FabricItemSettings().maxCount(1));
 
     public static final Identifier SET_CAN_CARRY_PACKET = new Identifier(MOD_ID, "can_carry_packet");
 
@@ -48,29 +49,29 @@ public class Carrier implements ModInitializer, EntityComponentInitializer {
         ServerTickEvents.END_WORLD_TICK.register(new ServerWorldTickCallback());
 
 
-        Registry.ENTITY_TYPE.forEach((entityType) -> {
-            Identifier id = Registry.ENTITY_TYPE.getId(entityType);
+        Registries.ENTITY_TYPE.forEach((entityType) -> {
+            Identifier id = Registries.ENTITY_TYPE.getId(entityType);
             Identifier type = new Identifier("carrier", id.getNamespace() + "_" + id.getPath());
             register(entityType, type);
         });
 
-        RegistryEntryAddedCallback.event(Registry.ENTITY_TYPE).register((rawId, id, entityType) -> {
+        RegistryEntryAddedCallback.event(Registries.ENTITY_TYPE).register((rawId, id, entityType) -> {
             Identifier type = new Identifier("carrier", id.getNamespace() + "_" + id.getPath());
             register(entityType, type);
         });
 
-        Registry.BLOCK.forEach((block) -> {
-            Identifier id = Registry.BLOCK.getId(block);
+        Registries.BLOCK.forEach((block) -> {
+            Identifier id = Registries.BLOCK.getId(block);
             Identifier type = new Identifier("carrier", id.getNamespace() + "_" + id.getPath());
             register(block, type);
         });
 
-        RegistryEntryAddedCallback.event(Registry.BLOCK).register((rawId, id, block) -> {
+        RegistryEntryAddedCallback.event(Registries.BLOCK).register((rawId, id, block) -> {
             Identifier type = new Identifier("carrier", id.getNamespace() + "_" + id.getPath());
             register(block, type);
         });
 
-        Registry.register(Registry.ITEM, new Identifier(MOD_ID, "glove"), ITEM_GLOVE);
+        Registry.register(Registries.ITEM, new Identifier(MOD_ID, "glove"), ITEM_GLOVE);
 
         if (CONFIG.doGlovesExist()) {
             RuntimeResourcePack resourcePack = RuntimeResourcePack.create(MOD_ID + ":gloves");
@@ -84,10 +85,10 @@ public class Carrier implements ModInitializer, EntityComponentInitializer {
             RRPCallback.EVENT.register(packs -> packs.add(resourcePack));
         }
 
-        ServerSidePacketRegistry.INSTANCE.register(SET_CAN_CARRY_PACKET, (ctx, buf) -> {
+        ServerPlayNetworking.registerGlobalReceiver(SET_CAN_CARRY_PACKET, (server, player, handler, buf, responseSender) -> {
             boolean canCarry = buf.readBoolean();
-            ctx.getTaskQueue().execute(() ->
-                    ((CarrierPlayerExtension) ctx.getPlayer()).setCanCarry(canCarry));
+            server.execute(() ->
+                    ((CarrierPlayerExtension) player).setCanCarry(canCarry));
         });
 
         CarrierCommands.register();

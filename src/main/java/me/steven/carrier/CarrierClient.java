@@ -13,7 +13,7 @@ public class CarrierClient implements ClientModInitializer {
     public void onInitializeClient() {
         ClientTickEvents.END_CLIENT_TICK.register((client) -> {
             if (client.player != null)
-            ((CarrierPlayerExtension) client.player).setCanCarry((client.player.isSneaking() && KEY_BINDING.isUnbound()) || KEY_BINDING.isPressed());
+                ((CarrierPlayerExtension) client.player).setCanCarry((client.player.isSneaking() && KEY_BINDING.isUnbound()) || KEY_BINDING.isPressed());
         });
     }
 
